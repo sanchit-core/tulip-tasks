@@ -1,0 +1,222 @@
+:root {
+  --ink: #171717;
+  --paper: #f3efe6;
+  --surface: #ffffff;
+  --surface-2: #ede9de;
+  --surface-3: #e0dccd;
+
+  --text-1: #171717;
+  --text-2: #4a4a4a;
+  --text-3: #8a8a8a;
+  --text-on-primary: #ffffff;
+
+  --primary: #ff4d6d;
+  --primary-strong: #e6395b;
+  --primary-soft: #ffe1e7;
+
+  --accent: #ffd447;
+  --accent-soft: #fff3c4;
+
+  --urgent: #ef4444;
+  --urgent-soft: #fde3e3;
+  --high: #f59e0b;
+  --high-soft: #fdeecd;
+  --medium: #3b82f6;
+  --medium-soft: #dcebfe;
+  --low: #16a34a;
+  --low-soft: #dcf5e7;
+
+  --violet: #7c6cf0;
+  --violet-soft: #e8e5fd;
+
+  --danger: #ef4444;
+  --danger-soft: #fde3e3;
+
+  --radius-xl: 14px;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 4px;
+
+  --border: 3px solid var(--ink);
+
+  --shadow-raised: 5px 5px 0 var(--ink);
+  --shadow-raised-lg: 8px 8px 0 var(--ink);
+  --shadow-flat: 3px 3px 0 var(--ink);
+  --shadow-pressed: 1px 1px 0 var(--ink);
+  --shadow-inset: inset 3px 3px 0 rgba(23, 23, 23, 0.08);
+  --shadow-inset-tight: inset 2px 2px 0 rgba(23, 23, 23, 0.08);
+  --shadow-pop: 10px 10px 0 var(--ink);
+
+  --t: 0.16s cubic-bezier(0.2, 0.9, 0.3, 1);
+  --font: "Nunito", "Avenir Next", -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans",
+    "Helvetica Neue", Arial, sans-serif;
+  --sidebar-w: 252px;
+  --titlebar-h: 44px;
+  --header-h: 68px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+@supports (overflow-x: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+
+body {
+  font-family: var(--font);
+  color: var(--text-1);
+  background-color: var(--paper);
+  background-image: radial-gradient(rgba(23, 23, 23, 0.06) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 15px;
+  line-height: 1.5;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+}
+
+img,
+svg,
+canvas {
+  max-width: 100%;
+}
+
+.muted {
+  color: var(--text-2);
+}
+.muted-3 {
+  color: var(--text-3);
+}
+.small {
+  font-size: 13px;
+}
+.tiny {
+  font-size: 12px;
+}
+.mono {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.spacer {
+  flex: 1;
+}
+.wrap {
+  flex-wrap: wrap;
+}
+
+.chip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+input,
+select,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ink);
+  border-radius: 0;
+  border: 2px solid var(--paper);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

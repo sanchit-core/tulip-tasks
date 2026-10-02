@@ -4,6 +4,8 @@
   import Icon from "./Icon.svelte";
   import NeuBadge from "./NeuBadge.svelte";
   import { toast } from "$lib/toasts";
+  import PromptModal from "./PromptModal.svelte";
+  import ConfirmModal from "./ConfirmModal.svelte";
 
   let {
     onquickadd,
@@ -16,6 +18,65 @@
     onexport: () => void;
     onimport: () => void;
   } = $props();
+
+  // Replacement for prompt/confirm
+  let promptOpen = $state(false);
+  let promptTitle = $state("");
+  let promptMessage = $state("");
+  let promptPlaceholder = $state("");
+  let promptDefault = $state("");
+  let promptResolve = $state<((v: string) => void) | null>(null);
+  let promptReject = $state<(() => void) | null>(null);
+
+  let confirmOpen = $state(false);
+  let confirmMessage = $state("");
+  let confirmResolve = $state<(() => void) | null>(null);
+  let confirmReject = $state<(() => void) | null>(null);
+
+  function showPrompt(title: string, message: string, placeholder: string, defaultValue: string): Promise<string> {
+    promptTitle = title;
+    promptMessage = message;
+    promptPlaceholder = placeholder;
+    promptDefault = defaultValue;
+    promptOpen = true;
+    return new Promise((resolve, reject) => {
+      promptResolve = resolve;
+      promptReject = reject;
+    });
+  }
+
+  function showConfirm(message: string): Promise<boolean> {
+    confirmMessage = message;
+    confirmOpen = true;
+    return new Promise((resolve) => {
+      confirmResolve = () => resolve(true);
+      confirmReject = () => resolve(false);
+    });
+  }
+
+  function onPromptConfirm(value: string) {
+    promptOpen = false;
+    promptResolve?.(value);
+    promptResolve = promptReject = null;
+  }
+
+  function onPromptCancel() {
+    promptOpen = false;
+    promptReject?.();
+    promptResolve = promptReject = null;
+  }
+
+  function onConfirmConfirm() {
+    confirmOpen = false;
+    confirmResolve?.();
+    confirmResolve = confirmReject = null;
+  }
+
+  function onConfirmCancel() {
+    confirmOpen = false;
+    confirmReject?.();
+    confirmResolve = confirmReject = null;
+  }
 
   interface Cmd {
     id: string;
@@ -59,9 +120,9 @@
         label: "New board…",
         icon: "board",
         group: "Create",
-        run: () => {
+        run: async () => {
           close();
-          const name = prompt("Board name", "New board");
+          const name = await showPrompt("New board", "Board name", "New board", "New board");
           if (name) store.addBoard(name);
         },
       },
@@ -70,11 +131,11 @@
         label: "Add column to current board",
         icon: "columns",
         group: "Create",
-        run: () => {
+        run: async () => {
           close();
           const id = store.activeBoardId;
           if (!id) return;
-          const name = prompt("Column name", "New column");
+          const name = await showPrompt("New column", "Column name", "New column", "New column");
           if (name) store.addColumn(id, name);
         },
       },
@@ -226,6 +287,10 @@
     e.preventDefault();
     store.paletteOpen = !store.paletteOpen;
   }
+  if (store.paletteOpen && e.key === "Escape") {
+    e.preventDefault();
+    close();
+  }
 }} />
 
 {#if store.paletteOpen}
@@ -286,6 +351,25 @@
     </div>
   </div>
 {/if}
+
+<PromptModal
+  bind:open={promptOpen}
+  title={promptTitle}
+  message={promptMessage}
+  placeholder={promptPlaceholder}
+  defaultValue={promptDefault}
+  validate={undefined}
+  onconfirm={onPromptConfirm}
+  oncancel={onPromptCancel}
+/>
+
+<ConfirmModal
+  bind:open={confirmOpen}
+  title="Confirm"
+  message={confirmMessage}
+  onconfirm={onConfirmConfirm}
+  oncancel={onConfirmCancel}
+/>
 
 <style>
   .scrim {

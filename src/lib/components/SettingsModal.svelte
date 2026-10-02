@@ -80,6 +80,11 @@
       label="Hide completed tasks"
       onchange={(v) => (store.filters.hideCompleted = v)}
     />
+    <NeuToggle
+      checked={s.hideTitlebar}
+      label="Hide window titlebar and native controls"
+      onchange={(v) => store.updateSettings({ hideTitlebar: v })}
+    />
   </div>
 
   <div class="sec">

@@ -4,6 +4,7 @@
   import { importFromFile, exportToFile } from "$lib/transfer";
   import { toast } from "$lib/toasts";
   import Titlebar from "$lib/components/Titlebar.svelte";
+  import { getCurrentWindow } from "@tauri-apps/api/window";
   import Sidebar from "$lib/components/Sidebar.svelte";
   import FilterBar from "$lib/components/FilterBar.svelte";
   import BoardView from "$lib/components/BoardView.svelte";
@@ -153,7 +154,15 @@
 />
 
 <div class="app" class:dragging={!!dnd.state}>
-  <Titlebar saveState={store.saveState} />
+  {#if !store.workspace.settings.hideTitlebar}
+    <Titlebar saveState={store.saveState} />
+  {/if}
+
+  {#if dnd.state?.ghostHTML}
+    <div class="drag-ghost" style="left: {dnd.state.pointerX}px; top: {dnd.state.pointerY}px;">
+      {@html dnd.state.ghostHTML}
+    </div>
+  {/if}
 
   <div class="body">
     {#if store.sidebarOpen}
@@ -173,12 +182,18 @@
 
         <div class="titles">
           <h1 class="truncate">
-            {#if store.view === "board" && board}
-              <span class="swatch" style:--c={board.color}></span>{board.title}
+            {#if store.view === "board"}
+              {#if board}
+                <span class="swatch" style:--c={board.color}></span>{board.title}
+              {:else}
+                Board
+              {/if}
             {:else if store.view === "calendar"}
               Calendar
-            {:else}
+            {:else if store.view === "backlog"}
               Backlog inbox
+            {:else}
+              {store.view}
             {/if}
           </h1>
           <p class="tiny muted-3 truncate">
@@ -377,5 +392,19 @@
     min-width: 96px;
     text-align: center;
     flex: none;
+  }
+
+  .drag-ghost {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-12px, -12px);
+    opacity: 0.95;
+    border: var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-pop);
+    background: var(--surface);
   }
 </style>

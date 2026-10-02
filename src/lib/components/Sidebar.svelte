@@ -4,6 +4,8 @@
   import NeuBadge from "./NeuBadge.svelte";
   import NeuButton from "./NeuButton.svelte";
   import { toast } from "$lib/toasts";
+  import PromptModal from "./PromptModal.svelte";
+  import ConfirmModal from "./ConfirmModal.svelte";
 
   const VIEWS: { id: View; label: string; icon: string; key: string }[] = [
     { id: "board", label: "Board", icon: "columns", key: "1" },
@@ -25,6 +27,12 @@
   let renaming = $state<string | null>(null);
   let draft = $state("");
 
+  // Modals
+  let addBoardOpen = $state(false);
+  let deleteBoardOpen = $state(false);
+  let deleteBoardId = $state<string | null>(null);
+  let deleteBoardTitle = $state("");
+
   let boards = $derived(store.boards());
   let stats = $derived(store.stats());
 
@@ -34,10 +42,19 @@
   }
 
   function addBoard() {
-    const name = prompt("Board name", "New board");
-    if (name === null) return;
-    const b = store.addBoard(name, BOARD_COLORS[boards.length % BOARD_COLORS.length]);
-    toast(`Created “${b.title}”`, "success");
+    addBoardOpen = true;
+  }
+
+  function onAddBoardConfirm(name: string) {
+    if (name) {
+      const b = store.addBoard(name, BOARD_COLORS[boards.length % BOARD_COLORS.length]);
+      toast(`Created “${b.title}”`, "success");
+    }
+    addBoardOpen = false;
+  }
+
+  function onAddBoardCancel() {
+    addBoardOpen = false;
   }
 
   function startRename(id: string, title: string) {
@@ -58,13 +75,25 @@
   }
 
   function removeBoard(id: string, title: string) {
-    const s = store.stats(id);
-    const msg =
-      `Delete board “${title}” and its ${s.total} task${s.total === 1 ? "" : "s"}? ` +
-      `This cannot be undone.`;
-    if (!confirm(msg)) return;
-    store.deleteBoard(id);
-    toast("Board deleted", "info");
+    deleteBoardId = id;
+    deleteBoardTitle = title;
+    deleteBoardOpen = true;
+  }
+
+  function onDeleteBoardConfirm() {
+    if (deleteBoardId) {
+      store.deleteBoard(deleteBoardId);
+      toast("Board deleted", "info");
+    }
+    deleteBoardOpen = false;
+    deleteBoardId = null;
+    deleteBoardTitle = "";
+  }
+
+  function onDeleteBoardCancel() {
+    deleteBoardOpen = false;
+    deleteBoardId = null;
+    deleteBoardTitle = "";
   }
 
   function viewCount(v: View): number | null {
@@ -172,6 +201,25 @@
     </NeuButton>
   </div>
 </aside>
+
+<PromptModal
+  bind:open={addBoardOpen}
+  title="New board"
+  message=""
+  placeholder="Board name"
+  defaultValue="New board"
+  validate={undefined}
+  onconfirm={onAddBoardConfirm}
+  oncancel={onAddBoardCancel}
+/>
+
+<ConfirmModal
+  bind:open={deleteBoardOpen}
+  title="Delete board"
+  message={`Delete board "${deleteBoardTitle}" and all its tasks? This cannot be undone.`}
+  onconfirm={onDeleteBoardConfirm}
+  oncancel={onDeleteBoardCancel}
+/>
 
 <style>
   .side {

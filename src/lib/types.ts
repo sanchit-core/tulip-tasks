@@ -72,12 +72,15 @@ export interface Settings {
   notifyHour: number;
   /** Warn when a board column is over its WIP limit. */
   wipWarnings: boolean;
+  /** Hide the window titlebar/decorations entirely. */
+  hideTitlebar: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   notificationsEnabled: true,
   notifyHour: 9,
   wipWarnings: true,
+  hideTitlebar: false,
 };
 
 export interface Workspace {

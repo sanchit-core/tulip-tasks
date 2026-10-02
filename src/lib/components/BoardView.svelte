@@ -7,6 +7,8 @@
   import NeuButton from "./NeuButton.svelte";
   import EmptyState from "./EmptyState.svelte";
   import { toast } from "$lib/toasts";
+  import PromptModal from "./PromptModal.svelte";
+  import ConfirmModal from "./ConfirmModal.svelte";
 
   let { onopen }: { onopen: (id: string) => void } = $props();
 
@@ -14,6 +16,13 @@
   let editTitle = $state("");
   let wipFor = $state<string | null>(null);
   let wipValue = $state("");
+
+  // Prompt modals
+  let addColOpen = $state(false);
+  let quickAddOpen = $state(false);
+  let quickAddCol = $state<Column | null>(null);
+  let deleteColOpen = $state(false);
+  let deleteCol = $state<Column | null>(null);
 
   let columns = $derived(store.columns());
   let active = $derived(store.activeBoardId);
@@ -30,15 +39,34 @@
 
   function addColumn() {
     if (!active) return;
-    const name = prompt("Column name", "New column");
-    if (name === null) return;
-    store.addColumn(active, name);
+    addColOpen = true;
+  }
+
+  function onAddColumnConfirm(name: string) {
+    if (active) store.addColumn(active, name);
+    addColOpen = false;
+  }
+
+  function onAddColumnCancel() {
+    addColOpen = false;
   }
 
   function quickAdd(col: Column) {
-    const title = prompt(`Add a task to “${col.title}”`, "");
-    if (title === null || !title.trim()) return;
-    store.addTask({ title, columnId: col.id });
+    quickAddCol = col;
+    quickAddOpen = true;
+  }
+
+  function onQuickAddConfirm(title: string) {
+    if (quickAddCol && title.trim()) {
+      store.addTask({ title, columnId: quickAddCol.id });
+    }
+    quickAddOpen = false;
+    quickAddCol = null;
+  }
+
+  function onQuickAddCancel() {
+    quickAddOpen = false;
+    quickAddCol = null;
   }
 
   function saveWip(col: Column) {
@@ -48,13 +76,22 @@
   }
 
   function removeColumn(col: Column) {
-    const n = store.rawColumnTasks(col.id).length;
-    const msg = n
-      ? `Delete “${col.title}” and send its ${n} task${n === 1 ? "" : "s"} back to the inbox?`
-      : `Delete “${col.title}”?`;
-    if (!confirm(msg)) return;
-    store.deleteColumn(col.id);
-    toast("Column deleted", "info");
+    deleteCol = col;
+    deleteColOpen = true;
+  }
+
+  function onDeleteColumnConfirm() {
+    if (deleteCol) {
+      store.deleteColumn(deleteCol.id);
+      toast("Column deleted", "info");
+    }
+    deleteColOpen = false;
+    deleteCol = null;
+  }
+
+  function onDeleteColumnCancel() {
+    deleteColOpen = false;
+    deleteCol = null;
   }
 
   function wipOver(col: Column, count: number): boolean {
@@ -191,6 +228,39 @@
     <NeuButton onclick={addColumn}>Add your first column</NeuButton>
   </EmptyState>
 {/if}
+
+<PromptModal
+  bind:open={addColOpen}
+  title="New column"
+  message=""
+  placeholder="Column name"
+  defaultValue="New column"
+  validate={undefined}
+  onconfirm={onAddColumnConfirm}
+  oncancel={onAddColumnCancel}
+/>
+
+<PromptModal
+  bind:open={quickAddOpen}
+  title="Quick add task"
+  message={`Add a task to “{quickAddCol?.title}”`}
+  placeholder="Task title"
+  validate={undefined}
+  onconfirm={onQuickAddConfirm}
+  oncancel={onQuickAddCancel}
+/>
+
+<ConfirmModal
+  bind:open={deleteColOpen}
+  title="Delete column"
+  message={deleteCol
+    ? (store.rawColumnTasks(deleteCol.id).length
+        ? `Delete “${deleteCol.title}” and send its ${store.rawColumnTasks(deleteCol.id).length} task${store.rawColumnTasks(deleteCol.id).length === 1 ? "" : "s"} back to the inbox?`
+        : `Delete “${deleteCol.title}”?`)
+    : ""}
+  onconfirm={onDeleteColumnConfirm}
+  oncancel={onDeleteColumnCancel}
+/>
 
 <style>
   .board-scroll {

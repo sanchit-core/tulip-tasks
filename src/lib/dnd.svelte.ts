@@ -9,7 +9,10 @@ export interface DragState {
   overIndex: number;
   /** Set when the pointer is over a calendar day. */
   overDate: string | null;
+  pointerX: number;
   pointerY: number;
+  /** HTML of the card being dragged, for the ghost visual. */
+  ghostHTML: string | null;
 }
 
 export type DropTarget =
@@ -55,19 +58,27 @@ export class DragController {
     this.startX = e.clientX;
     this.startY = e.clientY;
     this.moved = false;
+
+    // Capture the card element for the ghost visual
+    const cardEl = (e.target as HTMLElement).closest<HTMLElement>("[data-card]");
+    const ghostHTML = cardEl?.outerHTML ?? null;
+
     this.state = {
       taskId: task.id,
       fromColumnId: task.columnId,
       overColumnId: task.columnId,
       overIndex: 0,
       overDate: null,
+      pointerX: e.clientX,
       pointerY: e.clientY,
+      ghostHTML,
     };
   }
 
   move(e: PointerEvent): void {
     if (!this.state) return;
     this.pointerY = e.clientY;
+    this.state.pointerX = e.clientX;
     if (!this.moved && Math.hypot(e.clientX - this.startX, e.clientY - this.startY) > 5) {
       this.moved = true;
     }

@@ -67,6 +67,24 @@ Build a desktop binary:
 npm run tauri build
 ```
 
+### NixOS note
+
+`npm run tauri` sources `~/.config/tauri-build/env.sh` first, which puts `cargo`,
+`rustc` and a C compiler on `PATH` and points `PKG_CONFIG_PATH` at the nix store.
+None of those are on `PATH` on a stock NixOS system, so without it the Tauri CLI
+dies with `failed to run 'cargo metadata'`. The script also satisfies glib's
+`Requires.private: sysprof-capture-4` with a stub `.pc` file, because
+`libsysprof-capture` has never been built on this machine.
+
+To use cargo directly in a shell, source it once:
+
+```bash
+source ~/.config/tauri-build/env.sh
+```
+
+The first `tauri dev` links the whole GTK/WebKit stack and takes a while
+(~55 min on this machine). Incremental rebuilds after that are seconds.
+
 ## Where your data lives
 
 On the desktop the whole workspace is one human-readable JSON file:

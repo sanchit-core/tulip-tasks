@@ -2,7 +2,7 @@
 name = "tulip-kanban"
 version = "0.1.0"
 description = "Tulip Kanban — neo-brutalist kanban board with calendar, backlog inbox and recurring tasks"
-authors = ["you"]
+authors = ["Sanchit"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -34,3 +34,8 @@ lto = true
 opt-level = 3
 panic = "abort"
 strip = true
+
+# `cfg(mobile)` is set by tauri-build for mobile targets, but the generated
+# check-cfg list doesn't know about it.
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(mobile)'] }

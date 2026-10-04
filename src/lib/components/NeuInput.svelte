@@ -2,10 +2,10 @@
   /** Focus the input once it enters the DOM (avoids the `autofocus` attribute). */
   function focusOnMount(node: HTMLInputElement, enabled: boolean) {
     if (!enabled) return {};
-    const id = requestAnimationFrame(() => node.focus());
+    const id = setTimeout(() => node.focus(), 50);
     return {
       destroy() {
-        cancelAnimationFrame(id);
+        clearTimeout(id);
       },
     };
   }

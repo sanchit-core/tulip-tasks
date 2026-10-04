@@ -246,13 +246,13 @@
     width: 28px;
     height: 28px;
     flex: none;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     background: var(--primary);
     color: var(--text-on-primary);
     display: grid;
     place-items: center;
-    box-shadow: 2px 2px 0 var(--ink);
+    box-shadow: var(--shadow-hair);
   }
 
   nav {
@@ -264,7 +264,8 @@
     display: flex;
     align-items: center;
     gap: 9px;
-    border: 2px solid transparent;
+    border: var(--border-thin);
+    border-color: transparent;
     border-radius: var(--radius-md);
     background: transparent;
     padding: 7px 9px;
@@ -276,7 +277,7 @@
     background: var(--surface-2);
   }
   .view.on {
-    border-color: var(--ink);
+    border-color: var(--border-active);
     background: var(--primary-soft);
     box-shadow: var(--shadow-flat);
   }
@@ -310,7 +311,8 @@
     display: flex;
     align-items: center;
     gap: 7px;
-    border: 2px solid transparent;
+    border: var(--border-thin);
+    border-color: transparent;
     border-radius: var(--radius-md);
     padding: 5px 7px;
   }
@@ -318,7 +320,7 @@
     background: var(--surface-2);
   }
   .board.on {
-    border-color: var(--ink);
+    border-color: var(--border-active);
     background: var(--surface-2);
     box-shadow: var(--shadow-flat);
   }
@@ -332,7 +334,7 @@
   .swatch span {
     width: 13px;
     height: 13px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 4px;
     background: var(--c);
     display: block;
@@ -396,7 +398,7 @@
     width: 100%;
   }
   .new:hover {
-    border-color: var(--ink);
+    border-color: var(--border-active);
     color: var(--text-1);
   }
 
@@ -415,14 +417,14 @@
   }
 
   kbd {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     padding: 0 5px;
     background: var(--surface-2);
     font-family: inherit;
     font-size: 10px;
     font-weight: 900;
-    box-shadow: 1px 1px 0 var(--ink);
+    box-shadow: var(--shadow-micro);
     flex: none;
   }
 </style>

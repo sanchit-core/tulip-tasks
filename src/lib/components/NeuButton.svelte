@@ -90,7 +90,7 @@
     transform: translate(-1px, -1px);
   }
   .btn:active:not(:disabled) {
-    transform: translate(3px, 3px);
+    transform: translate(var(--press-shift));
     box-shadow: none;
   }
 
@@ -113,10 +113,13 @@
     transform: none;
   }
   .btn.primary {
-    color: var(--text-on-primary);
+    background: var(--primary);
+    /* ink on the pink fill: 5.6:1. White on --primary is only 3.2:1. */
+    color: var(--text-1);
   }
   .btn.danger {
     background: var(--danger);
+    /* white on --danger is 4.8:1; ink on red would only be 3.7:1 */
     color: var(--text-on-primary);
   }
   .btn:disabled {

@@ -14,6 +14,7 @@
     onopen,
     ondragstart,
     oncomplete,
+    oncontextmenu,
     compact = false,
   }: {
     task: Task;
@@ -23,6 +24,7 @@
     onopen: (id: string) => void;
     ondragstart: (e: PointerEvent) => void;
     oncomplete: (id: string) => void;
+    oncontextmenu?: (e: MouseEvent, task: Task) => void;
     compact?: boolean;
   } = $props();
 
@@ -51,6 +53,17 @@
   aria-label={task.title}
   onpointerdown={(e) => {
     if ((e.target as HTMLElement).closest("button")) return;
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const tx = ((e.clientX - rect.left) / rect.width) * 100;
+    const ty = ((e.clientY - rect.top) / rect.height) * 100;
+    const dx = (e.clientX - rect.left - rect.width / 2) * 0.05;
+    const dy = (e.clientY - rect.top - rect.height / 2) * 0.05;
+    const rot = Math.max(-2.5, Math.min(2.5, ((e.clientX - rect.left) / rect.width - 0.5) * 5));
+    (e.currentTarget as HTMLElement).style.setProperty("--tx", `${tx}%`);
+    (e.currentTarget as HTMLElement).style.setProperty("--ty", `${ty}%`);
+    (e.currentTarget as HTMLElement).style.setProperty("--rot", `${rot.toFixed(2)}deg`);
+    (e.currentTarget as HTMLElement).style.setProperty("--dx", `${dx.toFixed(1)}px`);
+    (e.currentTarget as HTMLElement).style.setProperty("--dy", `${dy.toFixed(1)}px`);
     ondragstart(e);
   }}
   onclick={() => onopen(task.id)}
@@ -60,6 +73,7 @@
       onopen(task.id);
     }
   }}
+  oncontextmenu={(e) => oncontextmenu?.(e, task)}
 >
   <header>
     <button
@@ -144,8 +158,12 @@
     box-shadow: var(--shadow-raised);
   }
   .card.dragging {
-    opacity: 0.35;
+    opacity: 0.92;
     cursor: grabbing;
+    transform: rotate(var(--rot, 1.5deg)) translate(var(--dx, 0), var(--dy, -1px));
+    box-shadow: var(--shadow-pop);
+    pointer-events: none;
+    transform-origin: var(--tx, 50%) var(--ty, 50%);
   }
   .card.done {
     background: var(--surface-2);
@@ -197,7 +215,7 @@
   .bar {
     flex: 1;
     height: 7px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 999px;
     background: var(--surface-2);
     overflow: hidden;

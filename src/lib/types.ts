@@ -66,6 +66,10 @@ export interface Board {
   createdAt: string;
 }
 
+export type Theme = "neo-brutalist" | "neumorphism" | "flat" | "minimal";
+
+export const THEMES: readonly Theme[] = ["neo-brutalist", "neumorphism", "flat", "minimal"];
+
 export interface Settings {
   notificationsEnabled: boolean;
   /** Hour of day (0-23) for the daily due-date digest. */
@@ -74,6 +78,8 @@ export interface Settings {
   wipWarnings: boolean;
   /** Hide the window titlebar/decorations entirely. */
   hideTitlebar: boolean;
+  /** Visual design theme. */
+  theme: Theme;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -81,6 +87,7 @@ export const DEFAULT_SETTINGS: Settings = {
   notifyHour: 9,
   wipWarnings: true,
   hideTitlebar: false,
+  theme: "neo-brutalist",
 };
 
 export interface Workspace {

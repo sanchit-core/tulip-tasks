@@ -40,6 +40,15 @@ export class DragController {
   /** Set when a drag moves far enough to count, so the trailing click is ignored. */
   suppressClick = false;
 
+  /**
+   * A pointer is down on a card but has not moved far enough to be a drag yet.
+   * Kept separate from `state` on purpose: making the drag live inserts a drop
+   * slot, which shifts the layout under the pointer, so `pointerup` lands on a
+   * different element and the browser fires `click` on the common ancestor
+   * instead of the card. Deferring keeps plain clicks working.
+   */
+  private pending: { task: Task; startX: number; startY: number; ghostHTML: string | null } | null = null;
+
   private targetColumnId: string | null = null;
   private targetDate: string | null = null;
   private targetIndex = 0;
@@ -47,10 +56,14 @@ export class DragController {
   private startX = 0;
   private startY = 0;
   private moved = false;
+  hasValidTarget = false;
 
   start(task: Task, e: PointerEvent): void {
     if (e.button !== 0) return;
-    e.preventDefault();
+    // NOTE: deliberately no `e.preventDefault()` here. Canceling pointerdown also
+    // suppresses the follow-up `click`, which would make cards unclickable
+    // (keyboard Enter would be the only way to open a task). Selection and focus
+    // stay native until a real drag begins; see `move`.
     this.targetColumnId = task.columnId;
     this.targetDate = null;
     this.targetIndex = 0;
@@ -58,30 +71,43 @@ export class DragController {
     this.startX = e.clientX;
     this.startY = e.clientY;
     this.moved = false;
+    this.hasValidTarget = false;
 
-    // Capture the card element for the ghost visual
     const cardEl = (e.target as HTMLElement).closest<HTMLElement>("[data-card]");
-    const ghostHTML = cardEl?.outerHTML ?? null;
+    this.pending = { task, startX: e.clientX, startY: e.clientY, ghostHTML: cardEl?.outerHTML ?? null };
+  }
 
+  /** Promote a pending press into a live drag. Only called past the threshold. */
+  private begin(e: PointerEvent): void {
+    const p = this.pending;
+    if (!p) return;
+    this.moved = true;
     this.state = {
-      taskId: task.id,
-      fromColumnId: task.columnId,
-      overColumnId: task.columnId,
+      taskId: p.task.id,
+      fromColumnId: p.task.columnId,
+      overColumnId: p.task.columnId,
       overIndex: 0,
       overDate: null,
       pointerX: e.clientX,
       pointerY: e.clientY,
-      ghostHTML,
+      ghostHTML: p.ghostHTML,
     };
   }
 
   move(e: PointerEvent): void {
-    if (!this.state) return;
-    this.pointerY = e.clientY;
-    this.state.pointerX = e.clientX;
-    if (!this.moved && Math.hypot(e.clientX - this.startX, e.clientY - this.startY) > 5) {
-      this.moved = true;
+    if (!this.state) {
+      const p = this.pending;
+      if (!p) return;
+      if (Math.hypot(e.clientX - p.startX, e.clientY - p.startY) <= 5) return;
+      // Past the threshold this is unambiguously a drag: stop text selection and
+      // the native click, now that we know it is not a plain button press.
+      e.preventDefault();
+      this.begin(e);
     }
+    const st = this.state;
+    if (!st) return;
+    this.pointerY = e.clientY;
+    st.pointerX = e.clientX;
 
     const el = document.elementFromPoint(e.clientX, e.clientY);
     const slot = el?.closest<HTMLElement>("[data-drop-index]") ?? null;
@@ -103,19 +129,24 @@ export class DragController {
       this.targetIndex = Number.MAX_SAFE_INTEGER;
     }
 
-    this.state.overColumnId = this.targetColumnId;
-    this.state.overIndex = Math.min(this.targetIndex, 9999);
-    this.state.overDate = this.targetDate;
-    this.state.pointerY = e.clientY;
+    st.overColumnId = this.targetColumnId;
+    st.overIndex = Math.min(this.targetIndex, 9999);
+    st.overDate = this.targetDate;
+    st.pointerY = e.clientY;
+    this.hasValidTarget = !!(slot || zone);
   }
 
   end(): DropResult | null {
     const s = this.state;
+    const moved = this.moved;
+    const hasTarget = this.hasValidTarget;
     this.state = null;
+    this.pending = null;
     if (!s) return null;
     // A pointerdown/up without movement still produces a click, which should open
     // the task. A real drag produces one too, and must not.
-    this.suppressClick = this.moved;
+    this.suppressClick = moved;
+    if (!moved || !hasTarget) return null;
     return {
       taskId: s.taskId,
       columnId: this.targetColumnId,
@@ -126,6 +157,7 @@ export class DragController {
 
   cancel(): void {
     this.state = null;
+    this.pending = null;
   }
 
   /** True when the given column is the current drop target. */

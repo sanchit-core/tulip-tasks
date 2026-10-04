@@ -32,13 +32,21 @@
     }
   }
 
+  // Register Escape only while this modal is open. A `svelte:window` handler
+  // would be shared across every Modal instance, so only one would ever fire.
   $effect(() => {
     if (!open) return;
-    dialog?.focus();
+    window.addEventListener("keydown", onkeydown);
+    const id = setTimeout(() => {
+      const el = dialog?.querySelector<HTMLElement>("input, textarea, [autofocus]");
+      el?.focus();
+    }, 50);
+    return () => {
+      window.removeEventListener("keydown", onkeydown);
+      clearTimeout(id);
+    };
   });
 </script>
-
-<svelte:window {onkeydown} />
 
 {#if open}
   <div
@@ -111,7 +119,7 @@
     flex: 1;
   }
   .close {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     background: var(--surface-2);
     width: 28px;
@@ -122,7 +130,7 @@
   }
   .close:active {
     box-shadow: none;
-    transform: translate(2px, 2px);
+    transform: translate(var(--press-shift-sm));
   }
   .body {
     padding: 16px;

@@ -11,7 +11,8 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "tauri": ". \"$HOME/.config/tauri-build/env.sh\" && tauri",
-    "tauri:build": ". \"$HOME/.config/tauri-build/env.sh\" && tauri build"
+    "tauri:build": ". \"$HOME/.config/tauri-build/env.sh\" && tauri build",
+    "package:tar": ". \"$HOME/.config/tauri-build/env.sh\" && tauri build --no-bundle && tar -czf \"src-tauri/target/release/bundle/tulip-kanban_${npm_package_version}_linux-x86_64.tar.gz\" -C src-tauri/target/release tulip-kanban"
   },
   "license": "MIT",
   "dependencies": {

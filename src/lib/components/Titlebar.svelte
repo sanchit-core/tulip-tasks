@@ -63,13 +63,13 @@
   .logo {
     width: 26px;
     height: 26px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     background: var(--primary);
     color: var(--text-on-primary);
     display: grid;
     place-items: center;
-    box-shadow: 2px 2px 0 var(--ink);
+    box-shadow: var(--shadow-hair);
     flex: none;
   }
   .title {
@@ -92,7 +92,7 @@
     width: 42px;
     height: var(--titlebar-h);
     border: none;
-    border-left: 2px solid var(--ink);
+    border-left: var(--border-thin);
     background: var(--surface-2);
     display: grid;
     place-items: center;

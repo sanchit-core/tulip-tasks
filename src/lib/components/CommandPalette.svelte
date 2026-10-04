@@ -434,14 +434,15 @@
     align-items: center;
     gap: 9px;
     width: 100%;
-    border: 2px solid transparent;
+    border: var(--border-thin);
+    border-color: transparent;
     border-radius: var(--radius-md);
     background: transparent;
     padding: 7px 9px;
     text-align: left;
   }
   .row-item.on {
-    border-color: var(--ink);
+    border-color: var(--border-active);
     background: var(--accent);
     box-shadow: var(--shadow-flat);
   }
@@ -487,14 +488,14 @@
   }
 
   kbd {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     padding: 0 4px;
     background: var(--surface);
     font-family: inherit;
     font-size: 10px;
     font-weight: 900;
-    box-shadow: 1px 1px 0 var(--ink);
+    box-shadow: var(--shadow-micro);
   }
 
   @keyframes fade {

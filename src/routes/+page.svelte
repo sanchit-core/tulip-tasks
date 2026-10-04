@@ -14,6 +14,7 @@
   import CommandPalette from "$lib/components/CommandPalette.svelte";
   import QuickAdd from "$lib/components/QuickAdd.svelte";
   import SettingsModal from "$lib/components/SettingsModal.svelte";
+  import ContextMenu from "$lib/components/ContextMenu.svelte";
   import Icon from "$lib/components/Icon.svelte";
   import NeuButton from "$lib/components/NeuButton.svelte";
   import NeuBadge from "$lib/components/NeuBadge.svelte";
@@ -24,6 +25,31 @@
 
   let board = $derived(store.activeBoard());
   let stats = $derived(store.stats());
+
+  // ---- context menu state ----
+  let contextMenu = $state<{
+    open: boolean;
+    x: number;
+    y: number;
+    items: Array<{
+      label: string;
+      icon?: string;
+      action: () => void;
+      disabled?: boolean;
+      danger?: boolean;
+      separator?: boolean;
+    }>;
+  }>({ open: false, x: 0, y: 0, items: [] });
+
+  function showContextMenu(e: MouseEvent, items: typeof contextMenu.items) {
+    e.preventDefault();
+    e.stopPropagation();
+    contextMenu = { open: true, x: e.clientX, y: e.clientY, items };
+  }
+
+  function hideContextMenu() {
+    contextMenu.open = false;
+  }
 
   // ---- drag & drop wiring (window-level so it works across views) ------
   function onPointerMove(e: PointerEvent) {
@@ -43,9 +69,18 @@
     const task = store.task(drop.taskId);
     if (!task) return;
 
+    // If dropping with no valid target or dropping to "nowhere meaningful" (e.g. empty board area not over a drop zone),
+    // don't move it - snap back to original position
+    if (!dnd.hasValidTarget) return;
+    if (drop.columnId === undefined) return;
+
     // Translate the filtered slot index into a raw sibling index.
-    const rawIndex = store.visibleToRaw(drop.columnId, drop.index, task.boardId);
-    store.moveTaskSmart(drop.taskId, drop.columnId, rawIndex);
+    try {
+      const rawIndex = store.visibleToRaw(drop.columnId, drop.index, task.boardId);
+      store.moveTaskSmart(drop.taskId, drop.columnId, rawIndex);
+    } catch {
+      return;
+    }
   }
 
   function onPointerCancel() {
@@ -76,6 +111,22 @@
   }
 
   function onKeydown(e: KeyboardEvent) {
+    if (e.key === "Escape") {
+      // Close whatever overlay is open. This runs before the `typing` guard so
+      // Escape still works while focus sits inside an overlay's own input.
+      if (shortcutsOpen) {
+        shortcutsOpen = false;
+        return;
+      }
+      if (quickAddOpen) {
+        quickAddOpen = false;
+        return;
+      }
+      if (store.activeTaskId) {
+        store.closeTask();
+        return;
+      }
+    }
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (typing(e)) return;
     if (store.paletteOpen) return;
@@ -102,8 +153,6 @@
     } else if (k === "?") {
       e.preventDefault();
       shortcutsOpen = true;
-    } else if (k === "escape") {
-      if (store.activeTaskId) store.closeTask();
     }
   }
 
@@ -273,6 +322,13 @@
       </div>
     </div>
   {/if}
+  <ContextMenu
+    bind:open={contextMenu.open}
+    x={contextMenu.x}
+    y={contextMenu.y}
+    items={contextMenu.items}
+    onclose={hideContextMenu}
+  />
 </div>
 
 <style>
@@ -322,7 +378,7 @@
   .swatch {
     width: 15px;
     height: 15px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 4px;
     background: var(--c);
     flex: none;
@@ -381,14 +437,14 @@
     color: var(--text-2);
   }
   kbd {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     padding: 2px 6px;
     background: var(--surface-2);
     font-family: inherit;
     font-size: 11px;
     font-weight: 900;
-    box-shadow: 1px 1px 0 var(--ink);
+    box-shadow: var(--shadow-micro);
     min-width: 96px;
     text-align: center;
     flex: none;
@@ -400,11 +456,12 @@
     left: 0;
     pointer-events: none;
     z-index: 9999;
-    transform: translate(-12px, -12px);
-    opacity: 0.95;
+    transform: translate(-12px, -12px) rotate(1.5deg);
+    opacity: 0.98;
     border: var(--border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-pop);
     background: var(--surface);
+    filter: drop-shadow(0 2px 4px rgba(23, 23, 23, 0.1));
   }
 </style>

@@ -82,7 +82,7 @@
 
   {#snippet footer()}
     <NeuButton variant="ghost" onclick={() => (open = false)}>Cancel</NeuButton>
-    <NeuButton tone="primary" onclick={submit} disabled={!title.trim()}>Add to inbox</NeuButton>
+    <NeuButton variant="primary" onclick={submit} disabled={!title.trim()}>Add to inbox</NeuButton>
   {/snippet}
 </Modal>
 
@@ -98,17 +98,17 @@
     flex-wrap: wrap;
   }
   .on-p {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 999px;
     background: var(--surface-2);
     padding: 4px 11px;
     font-size: 12px;
     font-weight: 800;
-    box-shadow: 2px 2px 0 var(--ink);
+    box-shadow: var(--shadow-hair);
   }
   .on-p.on {
     background: var(--c);
-    transform: translate(1px, 1px);
+    transform: translate(var(--press-shift-sm));
     box-shadow: none;
   }
   .f {

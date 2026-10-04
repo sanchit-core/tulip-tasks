@@ -151,6 +151,10 @@
               type="button"
               title={task.title}
               onclick={() => onopen(task.id)}
+              onpointerdown={(e) => {
+                e.stopPropagation();
+                dnd.start(task, e);
+              }}
             >
               <Icon name="check-circle" size={11} strokeWidth={2.6} />
               <span class="truncate">{task.title}</span>
@@ -256,6 +260,7 @@
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+    flex-shrink: 0;
   }
   h2 {
     font-size: 20px;
@@ -272,7 +277,7 @@
   }
   .switch button {
     border: none;
-    border-right: 2px solid var(--ink);
+    border-right: var(--border-thin);
     background: var(--surface);
     padding: 6px 14px;
     font-weight: 800;
@@ -282,14 +287,16 @@
   }
   .switch button.on {
     background: var(--primary);
-    color: var(--text-on-primary);
+    color: var(--text-1);
   }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 8px;
-    min-height: 0;
+    /* .cal is a scrolling column flexbox: without this the grid is squeezed
+       below its row height and the day cells spill onto .unscheduled. */
+    flex-shrink: 0;
   }
   .dow {
     text-align: center;
@@ -344,7 +351,7 @@
   }
   .day.today .num {
     background: var(--primary);
-    color: var(--text-on-primary);
+    color: var(--text-1);
   }
   .count {
     font-size: 11px;
@@ -362,14 +369,14 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     padding: 2px 5px;
     font-size: 11.5px;
     font-weight: 800;
     text-align: left;
     min-width: 0;
-    background: var(--surface-2);
+    touch-action: none;
   }
   .pill :global(.icon) {
     flex: none;
@@ -407,7 +414,7 @@
     margin-top: 4px;
   }
   .more-box input {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     padding: 4px 6px;
     outline: none;
@@ -415,6 +422,7 @@
   }
 
   .unscheduled {
+    flex-shrink: 0;
     border: var(--border);
     border-radius: var(--radius-lg);
     background: var(--surface-2);
@@ -439,7 +447,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-md);
     background: var(--surface);
     padding: 5px 9px;
@@ -448,7 +456,9 @@
     box-shadow: var(--shadow-flat);
   }
   .urow.dragging {
-    opacity: 0.4;
+    opacity: 0.92;
+    transform: rotate(1deg) translate(0, -1px);
+    box-shadow: var(--shadow-pop);
   }
   .dot-btn {
     border: none;
@@ -481,7 +491,7 @@
     text-align: left;
   }
   .utitle:hover {
-    color: var(--primary);
+    color: var(--primary-ink);
   }
   .grow {
     flex: 1;
@@ -495,7 +505,7 @@
     flex: none;
   }
   .date input {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     padding: 3px 6px;
     outline: none;

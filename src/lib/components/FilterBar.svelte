@@ -155,7 +155,7 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 999px;
     background: var(--surface-2);
     padding: 3px 10px;
@@ -166,16 +166,16 @@
   .pf:hover,
   .tf:hover {
     transform: translate(-1px, -1px);
-    box-shadow: 2px 2px 0 var(--ink);
+    box-shadow: var(--shadow-hair);
   }
   .pf.on {
     background: var(--c, var(--accent));
-    box-shadow: 2px 2px 0 var(--ink);
+    box-shadow: var(--shadow-hair);
   }
   .tf.on {
     background: var(--primary);
     color: var(--text-on-primary);
-    box-shadow: 2px 2px 0 var(--ink);
+    box-shadow: var(--shadow-hair);
   }
 
   .due {
@@ -185,7 +185,7 @@
     color: var(--text-3);
   }
   .due select {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 999px;
     background: var(--surface-2);
     padding: 3px 8px;

@@ -55,7 +55,7 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 999px;
     background: var(--tone);
     color: var(--ink);

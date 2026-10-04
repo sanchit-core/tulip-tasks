@@ -52,7 +52,7 @@
     left: 2px;
     width: 16px;
     height: 16px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 50%;
     background: var(--surface);
     transition: transform var(--t);

@@ -8,10 +8,12 @@
   import NeuBadge from "./NeuBadge.svelte";
   import NeuButton from "./NeuButton.svelte";
   import NeuInput from "./NeuInput.svelte";
+  import ConfirmModal from "./ConfirmModal.svelte";
   import { toast } from "$lib/toasts";
 
   let task = $derived(store.task(store.activeTaskId));
   let open = $derived(!!task);
+  let confirmDeleteOpen = $state(false);
 
   let subDraft = $state("");
   let tagDraft = $state("");
@@ -68,10 +70,15 @@
 
   function remove() {
     if (!task) return;
-    if (!confirm(`Delete “${task.title}”? This cannot be undone.`)) return;
+    confirmDeleteOpen = true;
+  }
+
+  function doRemove() {
+    if (!task) return;
     store.deleteTask(task.id);
     store.closeTask();
     toast("Task deleted", "info");
+    confirmDeleteOpen = false;
   }
 
   function duplicate() {
@@ -361,6 +368,14 @@
   {/if}
 </Modal>
 
+<ConfirmModal
+  bind:open={confirmDeleteOpen}
+  title="Delete task"
+  message={task ? `Delete “${task.title}”? This cannot be undone.` : ""}
+  onconfirm={doRemove}
+  oncancel={() => (confirmDeleteOpen = false)}
+/>
+
 <style>
   .head {
     display: flex;
@@ -443,17 +458,17 @@
     flex-wrap: wrap;
   }
   .seg button {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 999px;
     background: var(--surface-2);
     padding: 4px 11px;
     font-size: 12px;
     font-weight: 800;
-    box-shadow: 2px 2px 0 var(--ink);
+    box-shadow: var(--shadow-hair);
   }
   .seg button.on {
     background: var(--c);
-    transform: translate(1px, 1px);
+    transform: translate(var(--press-shift-sm));
     box-shadow: none;
   }
 
@@ -472,7 +487,7 @@
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 999px;
     background: var(--primary-soft);
     padding: 2px 5px 2px 9px;
@@ -497,13 +512,13 @@
     background: transparent;
     padding: 0 4px;
     font-weight: 800;
-    color: var(--primary);
+    color: var(--primary-ink);
     font-size: 12px;
   }
 
   .bar {
     height: 9px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 999px;
     background: var(--surface-2);
     overflow: hidden;
@@ -526,7 +541,7 @@
     display: flex;
     align-items: center;
     gap: 7px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-md);
     background: var(--surface-2);
     padding: 4px 7px;

@@ -9,18 +9,24 @@
 
   let ready = $state(false);
 
-  onMount(async () => {
-    await store.boot();
-    ready = true;
+  $effect(() => {
+    if (!ready || typeof document === "undefined") return;
+    document.documentElement.dataset.theme = store.workspace.settings.theme;
+  });
 
-    if (store.workspace.settings.notificationsEnabled && isDesktop()) {
-      bootNotifier(
-        () => store.workspace.tasks,
-        () => store.workspace.settings.notifyHour,
-      );
-    }
-
-    // Persist any pending change if the window goes away mid-debounce.
+  onMount(() => {
+    store.boot().then(() => {
+      ready = true;
+      if (typeof document !== "undefined") {
+        document.documentElement.dataset.theme = store.workspace.settings.theme;
+      }
+      if (store.workspace.settings.notificationsEnabled && isDesktop()) {
+        bootNotifier(
+          () => store.workspace.tasks,
+          () => store.workspace.settings.notifyHour,
+        );
+      }
+    });
     window.addEventListener("beforeunload", () => void store.flush());
   });
 </script>

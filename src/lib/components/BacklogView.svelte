@@ -10,6 +10,7 @@
   import NeuCard from "./NeuCard.svelte";
   import NeuInput from "./NeuInput.svelte";
   import EmptyState from "./EmptyState.svelte";
+  import ConfirmModal from "./ConfirmModal.svelte";
   import { toast } from "$lib/toasts";
 
   let { onopen }: { onopen: (id: string) => void } = $props();
@@ -49,11 +50,18 @@
     toast(`Moved to “${store.column(columnId)?.title}”`, "success", 1800);
   }
 
-  function remove(id: string, title: string) {
-    if (!confirm(`Discard “${title}” from the inbox?`)) return;
-    store.deleteTask(id);
-    toast("Task discarded", "info");
+  function requestRemove(id: string, title: string) {
+    pendingDiscard = { id, title };
   }
+
+  function confirmRemove() {
+    if (!pendingDiscard) return;
+    store.deleteTask(pendingDiscard.id);
+    toast("Task discarded", "info");
+    pendingDiscard = null;
+  }
+
+  let pendingDiscard: { id: string; title: string } | null = $state(null);
 
   let overdueCount = $derived(tasks.filter((t) => t.due && isOverdue(t.due) && !t.completedAt).length);
 </script>
@@ -101,7 +109,7 @@
       </NeuCard>
 
       <NeuCard tone="accent-soft" pad="sm">
-        <div class="row small">
+        <div class="row small tip">
           <Icon name="zap" size={16} strokeWidth={2.4} />
           <span>
             <strong>Tip:</strong> press <kbd>N</kbd> anywhere to capture instantly.
@@ -130,15 +138,35 @@
             : "Capture tasks on the left, then triage them onto the board."}
         />
       {:else}
-        <div class="rows" class:over={dnd.isOver(null)} data-drop-zone>
+        <div class="rows" class:over={dnd.isOver(null)} data-drop-zone data-drop-column={null}>
           {#each tasks as task (task.id)}
             <NeuCard pad="md" tone="default">
-                <div class="item">
+                <div
+                  class="item"
+                  class:dragging={dnd.isDragging(task.id)}
+                  data-card
+                  role="button"
+                  tabindex="0"
+                  onpointerdown={(e) => {
+                    const t = e.target as HTMLElement;
+                    if (t.closest("button") || t.closest("input") || t.closest("select") || t.closest("label")) return;
+                    dnd.start(task, e);
+                  }}
+                  onkeydown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onopen(task.id);
+                    }
+                  }}
+                >
                   <button
                     class="tick"
                     type="button"
                     title="Mark done"
-                    onclick={() => store.toggleComplete(task.id)}
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      store.toggleComplete(task.id);
+                    }}
                   >
                     <Icon
                       name={task.completedAt ? "check-circle" : "circle"}
@@ -148,7 +176,10 @@
                   </button>
 
                   <div class="body">
-                    <button class="title" type="button" onclick={() => onopen(task.id)}>
+                    <button class="title" type="button" onclick={(e) => {
+                      e.stopPropagation();
+                      onopen(task.id);
+                    }}>
                       {task.title}
                     </button>
                     {#if task.tags.length}
@@ -189,7 +220,10 @@
                         class="tbtn"
                         type="button"
                         title="Move to {col.title}"
-                        onclick={() => triage(task, col.id)}
+                        onclick={(e) => {
+                          e.stopPropagation();
+                          triage(task, col.id);
+                        }}
                       >
                         {col.title}
                       </button>
@@ -198,7 +232,10 @@
                       size="sm"
                       variant="ghost"
                       title="Discard"
-                      onclick={() => remove(task.id, task.title)}
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        requestRemove(task.id, task.title);
+                      }}
                     >
                       <Icon name="trash" size={15} strokeWidth={2.3} />
                     </NeuButton>
@@ -215,6 +252,15 @@
     </section>
   </div>
 </div>
+
+<ConfirmModal
+  open={pendingDiscard !== null}
+  title="Discard task"
+  message={pendingDiscard ? `Discard “${pendingDiscard.title}” from the inbox?` : ""}
+  confirmLabel="Discard"
+  onconfirm={confirmRemove}
+  oncancel={() => (pendingDiscard = null)}
+/>
 
 <style>
   .wrap {
@@ -250,7 +296,10 @@
     margin: 4px 0 0;
   }
   .col {
+    display: flex;
+    flex-direction: column;
     gap: 12px;
+    padding: 0;
   }
 
   .inline {
@@ -262,7 +311,7 @@
   }
   .inline select,
   .inline input {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     padding: 5px 7px;
     background: var(--surface);
@@ -271,14 +320,14 @@
   }
 
   kbd {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     padding: 0 5px;
     background: var(--surface);
     font-family: inherit;
     font-size: 11px;
     font-weight: 900;
-    box-shadow: 1px 1px 0 var(--ink);
+    box-shadow: var(--shadow-micro);
   }
 
   .list-col {
@@ -306,6 +355,13 @@
     display: flex;
     gap: 10px;
     align-items: flex-start;
+    cursor: grab;
+    touch-action: none;
+  }
+  .item.dragging {
+    opacity: 0.92;
+    transform: rotate(1deg) translate(0, -1px);
+    box-shadow: var(--shadow-pop);
   }
   .tick {
     border: none;
@@ -358,13 +414,13 @@
     flex: none;
   }
   .tbtn {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 999px;
     background: var(--surface-2);
     font-size: 11px;
     font-weight: 800;
     padding: 2px 9px;
-    box-shadow: 2px 2px 0 var(--ink);
+    box-shadow: var(--shadow-hair);
     transition: transform var(--t);
   }
   .tbtn:hover {
@@ -372,11 +428,15 @@
     transform: translate(-1px, -1px);
   }
   .tbtn:active {
-    transform: translate(2px, 2px);
+    transform: translate(var(--press-shift-sm));
     box-shadow: none;
   }
 
   .hint {
     margin: 0;
+  }
+  .tip {
+    align-items: center;
+    gap: 6px;
   }
 </style>

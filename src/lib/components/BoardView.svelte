@@ -10,7 +10,7 @@
   import PromptModal from "./PromptModal.svelte";
   import ConfirmModal from "./ConfirmModal.svelte";
 
-  let { onopen }: { onopen: (id: string) => void } = $props();
+  let { onopen, oncontextmenu }: { onopen: (id: string) => void; oncontextmenu?: (e: MouseEvent, task: Task) => void } = $props();
 
   let editingId = $state<string | null>(null);
   let editTitle = $state("");
@@ -100,7 +100,7 @@
 </script>
 
 <div class="board-scroll">
-  <div class="board" class:inbox={dnd.isOver(null)} data-drop-zone>
+  <div class="board" class:inbox={dnd.isOver(null)}>
     {#each columns as col (col.id)}
       {@const list = store.columnTasks(col.id)}
       {@const openCount = store.rawColumnTasks(col.id).filter((t) => !t.completedAt).length}
@@ -176,7 +176,13 @@
 
         <div class="list" data-drop-zone data-drop-column={col.id}>
           {#if list.length === 0}
-            <div class="blank">
+            <div
+              class="blank"
+              class:live={dnd.state?.overColumnId === col.id && (dnd.state?.overIndex ?? 0) === 0}
+              data-drop-zone
+              data-drop-column={col.id}
+              data-drop-index={0}
+            >
               {#if store.filterActive()}
                 <span class="tiny muted-3">No matches</span>
               {:else}
@@ -189,22 +195,31 @@
             {@const isDrag = dnd.isDragging(task.id)}
             <div
               class="slot"
+              data-drop-zone
+              data-drop-column={col.id}
+              data-drop-index={i}
               class:live={dnd.state?.overColumnId === col.id && dnd.state?.overIndex === i && !isDrag}
-            ></div>
-            <TaskCard
-              {task}
-              dragging={isDrag}
-              onopen={onopen}
-              oncomplete={(id) => store.toggleComplete(id)}
-              ondragstart={(e) => dnd.start(task, e)}
-            />
+            >
+              <TaskCard
+                {task}
+                dragging={isDrag}
+                onopen={onopen}
+                oncomplete={(id) => store.toggleComplete(id)}
+                ondragstart={(e) => dnd.start(task, e)}
+              />
+            </div>
           {/each}
 
           <div
             class="slot end"
+            data-drop-zone
+            data-drop-column={col.id}
+            data-drop-index={list.length}
             class:live={dnd.state?.overColumnId === col.id &&
               (dnd.state?.overIndex ?? 0) >= list.length}
-          ></div>
+          >
+            <div class="slot-target"></div>
+          </div>
         </div>
 
         <footer>
@@ -219,6 +234,16 @@
       <NeuButton variant="flat" onclick={addColumn}>
         <Icon name="plus" size={16} strokeWidth={2.6} /> Add column
       </NeuButton>
+    </div>
+
+    <div
+      class="inbox-zone"
+      data-drop-zone
+      data-drop-column={null}
+      data-drop-index={0}
+      class:over={dnd.isOver(null)}
+    >
+      <span class="tiny muted-3">Drop here to send to inbox</span>
     </div>
   </div>
 </div>
@@ -243,7 +268,7 @@
 <PromptModal
   bind:open={quickAddOpen}
   title="Quick add task"
-  message={`Add a task to “{quickAddCol?.title}”`}
+  message="Add a task to &ldquo;{quickAddCol?.title}&rdquo;"
   placeholder="Task title"
   validate={undefined}
   onconfirm={onQuickAddConfirm}
@@ -312,7 +337,7 @@
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     background: var(--c);
     flex: none;
   }
@@ -350,7 +375,7 @@
     background: var(--surface);
   }
   .wip {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: 999px;
     background: var(--surface);
     font-size: 11px;
@@ -370,7 +395,7 @@
   }
   .wip-edit input {
     width: 74px;
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     padding: 3px 6px;
     outline: none;
@@ -388,16 +413,28 @@
   }
 
   .slot {
-    height: 4px;
-    border-radius: 999px;
+    border-radius: var(--radius-md);
     transition:
-      height var(--t),
-      background-color var(--t);
+      background-color var(--t),
+      border-color var(--t);
   }
   .slot.live {
+    background: var(--primary-soft);
+    border: 2px solid var(--primary);
+  }
+  .slot.end {
+    min-height: 46px;
+  }
+  .slot-target {
+    height: 4px;
+    border-radius: 999px;
+    background: transparent;
+    transition: height var(--t), background-color var(--t);
+  }
+  .slot.end.live .slot-target {
     height: 14px;
     background: var(--primary);
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
   }
 
   .blank {
@@ -405,6 +442,11 @@
     border-radius: var(--radius-md);
     padding: 14px 8px;
     text-align: center;
+    transition: border-color var(--t), background-color var(--t);
+  }
+  .blank.live {
+    border-color: var(--primary);
+    background: var(--primary-soft);
   }
 
   footer {
@@ -414,5 +456,20 @@
   .add-col {
     flex: none;
     padding-top: 2px;
+  }
+
+  .inbox-zone {
+    border: 2px dashed var(--text-3);
+    border-radius: var(--radius-md);
+    padding: 12px 8px;
+    text-align: center;
+    color: var(--text-3);
+    margin-top: 10px;
+    transition: border-color var(--t), background-color var(--t), color var(--t);
+  }
+  .inbox-zone.over {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    color: var(--primary);
   }
 </style>

@@ -6,11 +6,12 @@
 		open: boolean;
 		title: string;
 		message: string;
+		confirmLabel?: string;
 		onconfirm: () => void;
 		oncancel: () => void;
 	}
 
-	let { open = $bindable(false), title, message, onconfirm, oncancel } = $props();
+	let { open = $bindable(false), title, message, confirmLabel = "Delete", onconfirm, oncancel } = $props();
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Enter') onconfirm();
@@ -22,14 +23,14 @@
 	<p class="msg">{message}</p>
 	<div class="actions">
 		<NeuButton variant="ghost" onclick={oncancel}>Cancel</NeuButton>
-		<NeuButton variant="danger" onclick={onconfirm}>Delete</NeuButton>
+		<NeuButton variant="danger" onclick={onconfirm}>{confirmLabel}</NeuButton>
 	</div>
 
 	<style>
 		.msg {
 			margin: 0 0 16px;
 			font-size: 0.875rem;
-			color: var(--muted);
+			color: var(--text-2);
 			line-height: 1.5;
 		}
 		.actions {

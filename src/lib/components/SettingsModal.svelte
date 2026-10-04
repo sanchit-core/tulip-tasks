@@ -7,7 +7,16 @@
   import NeuButton from "./NeuButton.svelte";
   import NeuToggle from "./NeuToggle.svelte";
   import NeuBadge from "./NeuBadge.svelte";
+  import ConfirmModal from "./ConfirmModal.svelte";
+  import { THEMES, type Theme } from "$lib/types";
   import { toast } from "$lib/toasts";
+
+  const THEME_LABELS: Record<Theme, string> = {
+    "neo-brutalist": "Neo-brutalist (default)",
+    neumorphism: "Neumorphism",
+    flat: "Flat design",
+    minimal: "Minimal",
+  };
 
   let {
     open = $bindable(false),
@@ -31,11 +40,16 @@
 
   const s = $derived(store.workspace.settings);
   let stats = $derived(store.stats(null));
+  let confirmResetOpen = $state(false);
 
   function resetDemo() {
-    if (!confirm("Replace everything with the demo workspace? Your current data is lost.")) return;
+    confirmResetOpen = true;
+  }
+
+  function doResetDemo() {
     store.resetToDemo();
     toast("Demo workspace restored", "info");
+    confirmResetOpen = false;
     open = false;
   }
 </script>
@@ -85,6 +99,17 @@
       label="Hide window titlebar and native controls"
       onchange={(v) => store.updateSettings({ hideTitlebar: v })}
     />
+    <div class="field">
+      <span class="lbl">Theme &amp; design</span>
+      <select
+        value={s.theme}
+        onchange={(e) => store.updateSettings({ theme: e.currentTarget.value as Theme })}
+      >
+        {#each THEMES as t (t)}
+          <option value={t}>{THEME_LABELS[t]}</option>
+        {/each}
+      </select>
+    </div>
   </div>
 
   <div class="sec">
@@ -116,6 +141,15 @@
   {/snippet}
 </Modal>
 
+<ConfirmModal
+  bind:open={confirmResetOpen}
+  title="Reset to demo"
+  message="Replace everything with the demo workspace? Your current data is lost."
+  confirmLabel="Reset"
+  onconfirm={doResetDemo}
+  oncancel={() => (confirmResetOpen = false)}
+/>
+
 <style>
   .sec {
     display: flex;
@@ -140,7 +174,7 @@
     margin: 0;
   }
   code {
-    border: 2px solid var(--ink);
+    border: var(--border-thin);
     border-radius: var(--radius-sm);
     padding: 0 4px;
     background: var(--surface-2);
@@ -153,6 +187,18 @@
     padding: 6px 9px;
     font-weight: 700;
     outline: none;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .lbl {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 900;
   }
   .path {
     display: flex;

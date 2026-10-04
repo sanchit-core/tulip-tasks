@@ -7,17 +7,20 @@
 
   --text-1: #171717;
   --text-2: #4a4a4a;
-  --text-3: #8a8a8a;
+  /* muted, but >= 4.5:1 on --surface-2 (#ede9de), the lightest thing it sits on */
+  --text-3: #686868;
   --text-on-primary: #ffffff;
 
   --primary: #ff4d6d;
   --primary-strong: #e6395b;
   --primary-soft: #ffe1e7;
+  /* the same pink, darkened enough to be legible as text on light surfaces */
+  --primary-ink: #d92d4f;
 
   --accent: #ffd447;
   --accent-soft: #fff3c4;
 
-  --urgent: #ef4444;
+  --urgent: #dc2626;
   --urgent-soft: #fde3e3;
   --high: #f59e0b;
   --high-soft: #fdeecd;
@@ -29,7 +32,7 @@
   --violet: #7c6cf0;
   --violet-soft: #e8e5fd;
 
-  --danger: #ef4444;
+  --danger: #dc2626;
   --danger-soft: #fde3e3;
 
   --radius-xl: 14px;
@@ -38,14 +41,21 @@
   --radius-sm: 4px;
 
   --border: 3px solid var(--ink);
+  --border-thin: 2px solid var(--ink);
+  --border-hair: 1px solid var(--ink);
+  --border-active: var(--ink);
 
   --shadow-raised: 5px 5px 0 var(--ink);
   --shadow-raised-lg: 8px 8px 0 var(--ink);
   --shadow-flat: 3px 3px 0 var(--ink);
+  --shadow-hair: 2px 2px 0 var(--ink);
+  --shadow-micro: 1px 1px 0 var(--ink);
   --shadow-pressed: 1px 1px 0 var(--ink);
   --shadow-inset: inset 3px 3px 0 rgba(23, 23, 23, 0.08);
   --shadow-inset-tight: inset 2px 2px 0 rgba(23, 23, 23, 0.08);
   --shadow-pop: 10px 10px 0 var(--ink);
+  --press-shift: 3px 3px;
+  --press-shift-sm: 2px 2px;
 
   --t: 0.16s cubic-bezier(0.2, 0.9, 0.3, 1);
   --font: "Nunito", "Avenir Next", -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans",
@@ -53,6 +63,99 @@
   --sidebar-w: 252px;
   --titlebar-h: 44px;
   --header-h: 68px;
+  --bg-dots: radial-gradient(rgba(23, 23, 23, 0.06) 1.5px, transparent 1.5px);
+}
+
+:root[data-theme="neo-brutalist"] {
+  --border-active: var(--ink);
+  --radius-xl: 14px;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 4px;
+  --border: 3px solid var(--ink);
+  --border-thin: 2px solid var(--ink);
+  --border-hair: 1px solid var(--ink);
+  --shadow-raised: 5px 5px 0 var(--ink);
+  --shadow-raised-lg: 8px 8px 0 var(--ink);
+  --shadow-flat: 3px 3px 0 var(--ink);
+  --shadow-hair: 2px 2px 0 var(--ink);
+  --shadow-micro: 1px 1px 0 var(--ink);
+  --shadow-pressed: 1px 1px 0 var(--ink);
+  --shadow-inset: inset 3px 3px 0 rgba(23, 23, 23, 0.08);
+  --shadow-inset-tight: inset 2px 2px 0 rgba(23, 23, 23, 0.08);
+  --shadow-pop: 10px 10px 0 var(--ink);
+  --press-shift: 3px 3px;
+  --press-shift-sm: 2px 2px;
+  --bg-dots: radial-gradient(rgba(23, 23, 23, 0.06) 1.5px, transparent 1.5px);
+}
+
+:root[data-theme="neumorphism"] {
+  --border-active: rgba(23, 23, 23, 0.28);
+  --radius-xl: 16px;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --border: 2px solid rgba(23, 23, 23, 0.08);
+  --border-thin: 2px solid rgba(23, 23, 23, 0.08);
+  --border-hair: 1px solid rgba(23, 23, 23, 0.08);
+  --shadow-raised: 8px 8px 16px rgba(23, 23, 23, 0.12), -6px -6px 12px rgba(255, 255, 255, 0.9);
+  --shadow-raised-lg: 12px 12px 24px rgba(23, 23, 23, 0.12), -10px -10px 20px rgba(255, 255, 255, 0.9);
+  --shadow-flat: 4px 4px 8px rgba(23, 23, 23, 0.08), -3px -3px 6px rgba(255, 255, 255, 0.9);
+  --shadow-hair: 3px 3px 6px rgba(23, 23, 23, 0.1), -2px -2px 4px rgba(255, 255, 255, 0.9);
+  --shadow-micro: 2px 2px 4px rgba(23, 23, 23, 0.1), -1px -1px 2px rgba(255, 255, 255, 0.9);
+  --shadow-pressed: inset 3px 3px 6px rgba(23, 23, 23, 0.08), inset -2px -2px 4px rgba(255, 255, 255, 0.9);
+  --shadow-inset: inset 3px 3px 6px rgba(23, 23, 23, 0.08), inset -2px -2px 4px rgba(255, 255, 255, 0.9);
+  --shadow-inset-tight: inset 2px 2px 4px rgba(23, 23, 23, 0.08), inset -1px -1px 2px rgba(255, 255, 255, 0.9);
+  --shadow-pop: 16px 16px 40px rgba(23, 23, 23, 0.14), -12px -12px 24px rgba(255, 255, 255, 0.95);
+  --press-shift: 0 0;
+  --press-shift-sm: 0 0;
+  --bg-dots: none;
+}
+
+:root[data-theme="flat"] {
+  --border-active: var(--ink);
+  --radius-xl: 10px;
+  --radius-lg: 8px;
+  --radius-md: 6px;
+  --radius-sm: 4px;
+  --border: 2px solid var(--ink);
+  --border-thin: 2px solid var(--ink);
+  --border-hair: 1px solid var(--ink);
+  --shadow-raised: none;
+  --shadow-raised-lg: none;
+  --shadow-flat: none;
+  --shadow-hair: none;
+  --shadow-micro: none;
+  --shadow-pressed: none;
+  --shadow-inset: none;
+  --shadow-inset-tight: none;
+  --shadow-pop: none;
+  --press-shift: 0 0;
+  --press-shift-sm: 0 0;
+  --bg-dots: none;
+}
+
+:root[data-theme="minimal"] {
+  --border-active: var(--primary);
+  --radius-xl: 8px;
+  --radius-lg: 8px;
+  --radius-md: 6px;
+  --radius-sm: 4px;
+  --border: 1px solid rgba(23, 23, 23, 0.14);
+  --border-thin: 1px solid rgba(23, 23, 23, 0.14);
+  --border-hair: 1px solid rgba(23, 23, 23, 0.14);
+  --shadow-raised: none;
+  --shadow-raised-lg: none;
+  --shadow-flat: none;
+  --shadow-hair: none;
+  --shadow-micro: none;
+  --shadow-pressed: none;
+  --shadow-inset: none;
+  --shadow-inset-tight: none;
+  --shadow-pop: none;
+  --press-shift: 0 0;
+  --press-shift-sm: 0 0;
+  --bg-dots: none;
 }
 
 * {
@@ -78,7 +181,7 @@ body {
   font-family: var(--font);
   color: var(--text-1);
   background-color: var(--paper);
-  background-image: radial-gradient(rgba(23, 23, 23, 0.06) 1.5px, transparent 1.5px);
+  background-image: var(--bg-dots);
   background-size: 24px 24px;
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;

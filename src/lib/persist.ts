@@ -1,4 +1,12 @@
-import { DEFAULT_SETTINGS, WORKSPACE_VERSION, type Workspace, type WorkspaceFile } from "./types";
+import {
+  DEFAULT_SETTINGS,
+  THEMES,
+  WORKSPACE_VERSION,
+  type Settings,
+  type Theme,
+  type Workspace,
+  type WorkspaceFile,
+} from "./types";
 
 export const WORKSPACE_FILE = "workspace.json";
 const LS_KEY = "tulip-kanban.workspace.v1";
@@ -108,7 +116,13 @@ export function coerceWorkspace(data: unknown): Workspace | null {
         priority: t.priority ?? "medium",
         order: Number.isFinite(t.order) ? t.order : 0,
       })),
-    settings: { ...DEFAULT_SETTINGS, ...(body.settings ?? {}) },
+    settings: {
+      ...DEFAULT_SETTINGS,
+      ...(body.settings ?? {}),
+      theme: THEMES.includes((body.settings as any)?.theme as Theme)
+        ? ((body.settings as Settings).theme as Theme)
+        : DEFAULT_SETTINGS.theme,
+    },
   };
 }
 

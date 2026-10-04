@@ -17,8 +17,14 @@
 
 	let { open = $bindable(false), title, message = "", placeholder, defaultValue = "", validate, onconfirm, oncancel } = $props();
 
-	let value = $state(defaultValue);
+	let value = $state("");
 	let error = $state<string | null>(null);
+
+	$effect(() => {
+		if (open && defaultValue !== value) {
+			value = defaultValue;
+		}
+	});
 
 	function handleConfirm() {
 		if (validate) {
@@ -67,7 +73,7 @@
 		.msg {
 			margin: 0 0 12px;
 			font-size: 0.875rem;
-			color: var(--muted);
+			color: var(--text-2);
 		}
 		.err {
 			margin: 8px 0 0;

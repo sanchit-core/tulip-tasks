@@ -21,3 +21,6 @@ keystore/
 
 # stray agent/session scratch files
 session-ses_*.md
+
+# local release docs
+RELEASE.md

@@ -1,6 +1,6 @@
 {
   "name": "tulip-tasks",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "Tulip Tasks — a neo-brutalist task board with calendar, backlog inbox and recurring tasks",
   "type": "module",
   "scripts": {
@@ -12,9 +12,9 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "test": "vitest run",
     "test:watch": "vitest",
-    "version:patch": "npm version patch --no-git-tag-version && node -e \"const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json')); fs.writeFileSync('src-tauri/Cargo.toml', fs.readFileSync('src-tauri/Cargo.toml', 'utf8').replace(/version = \\\"[^\\\"]+\\\"/, `version = \\\"${p.version}\\\"`)); console.log('Synced to', p.version)\"",
-    "version:minor": "npm version minor --no-git-tag-version && node -e \"const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json')); fs.writeFileSync('src-tauri/Cargo.toml', fs.readFileSync('src-tauri/Cargo.toml', 'utf8').replace(/version = \\\"[^\\\"]+\\\"/, `version = \\\"${p.version}\\\"`)); console.log('Synced to', p.version)\"",
-    "version:major": "npm version major --no-git-tag-version && node -e \"const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json')); fs.writeFileSync('src-tauri/Cargo.toml', fs.readFileSync('src-tauri/Cargo.toml', 'utf8').replace(/version = \\\"[^\\\"]+\\\"/, `version = \\\"${p.version}\\\"`)); console.log('Synced to', p.version)\"",
+    "version:patch": "npm version patch --no-git-tag-version && node scripts/sync-version.cjs",
+    "version:minor": "npm version minor --no-git-tag-version && node scripts/sync-version.cjs",
+    "version:major": "npm version major --no-git-tag-version && node scripts/sync-version.cjs",
     "release": "npm run check && npm test && npm run build && git diff --quiet || (echo 'Working tree dirty - commit changes first' && exit 1)",
     "tauri": ". \"$HOME/.config/tauri-build/env.sh\" && tauri",
     "tauri:build": ". \"$HOME/.config/tauri-build/env.sh\" && tauri build",

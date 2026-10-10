@@ -164,7 +164,7 @@ An AUR package is maintained at:
 It packages the AppImage and provides a `.install` script. To build it locally:
 
 ```bash
-git clone https://aur.archlinux.org/tulip-tasks.git
+git clone https://github.com/sanchit-core/tulip-tasks.git
 cd tulip-tasks
 makepkg -si
 ```

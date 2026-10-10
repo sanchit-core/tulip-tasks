@@ -30,22 +30,34 @@ package() {
   # Install license
   install -Dm644 "$srcdir/$pkgname-$pkgver/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 
-  # Create .desktop entry with icon
-  # Try to extract the AppImage icon (the .desktop file will reference the AppImage)
-  install -Dm644 /dev/null "$pkgdir/usr/share/applications/tulip-tasks.desktop"
+  # Extract .desktop from AppImage to get icon information
+  extract_dir="$pkgdir/opt/tulip-tasks/extract"
+  install -d "$extract_dir"
+  if "$srcdir/tulip-tasks-0.1.5-x86_64.AppImage" --appimage-extract 2>/dev/null; then
+      # Copy the .desktop file
+      if [ -f "$extract_dir/tulip-tasks.desktop" ]; then
+          cp "$extract_dir/tulip-tasks.desktop" "$pkgdir/usr/share/applications/tulip-tasks.desktop"
+      fi
+      # Copy the icon if available
+      if [ -f "$extract_dir/tulip-tasks.svg" ] || [ -f "$extract_dir/tulip-tasks.png" ]; then
+          cp "$extract_dir/tulip-tasks.png" "$pkgdir/usr/share/icons/hicolor/256x256/apps/tulip-tasks.png" 2>/dev/null || true
+      fi
+  fi
 
-  # Write the .desktop entry
-  cat > "$pkgdir/usr/share/applications/tulip-tasks.desktop" << DESKTOP_EOF
+  # Create .desktop entry as fallback
+  if [ ! -f "$pkgdir/usr/share/applications/tulip-tasks.desktop" ]; then
+      cat > "$pkgdir/usr/share/applications/tulip-tasks.desktop" << DESKTOP_EOF
 [Desktop Entry]
 Name=Tulip Tasks
 Comment=A neo-brutalist task board with calendar, backlog inbox and recurring tasks
 Exec=/usr/bin/tulip-tasks
 Terminal=false
 Type=Application
-Categories=Utility;Organization;
 Icon=/usr/bin/tulip-tasks
+Categories=Utility;Organization;
 X-Comment=Tulip Tasks 0.1.5
 DESKTOP_EOF
+  fi
 
   # Try to update icon cache
   if [ -x /usr/bin/update-icon-caches ]; then

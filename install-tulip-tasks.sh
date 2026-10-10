@@ -3,7 +3,7 @@
 # Tulip Tasks local installation script
 # Installs the app into ~/.local/ without system-wide changes
 #
-# Usage: bash install-tulip-tasks.sh
+# Usage: bash install-tulip-tasks.sh [--remove|-R]
 #
 
 set -euo pipefail
@@ -13,28 +13,75 @@ APP_VER="0.1.5"
 APP_ARCH="x86_64"
 REPO="sanchit-core/tulip-tasks"
 
-# Determine the system architecture
-if [ -z "${ARCH:-}" ]; then
-    ARCH="$(uname -m)"
-    case "$ARCH" in
-        x86_64) ARCH="x86_64" ;;
-        aarch64|armv8l) ARCH="aarch64" ;;
-        *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
+# Parse arguments
+REMOVE=false
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -R|--remove)
+            REMOVE=true
+            shift
+            ;;
+        --help|-h)
+            echo "Usage: bash install-tulip-tasks.sh [--remove|-R]"
+            echo ""
+            echo "Options:"
+            echo "  -R, --remove   Remove Tulip Tasks installation"
+            echo "  --help, -h     Show this help message"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
     esac
+done
+
+# --- REMOVE MODE ---
+if [ "$REMOVE" = true ]; then
+    echo "=== Removing Tulip Tasks ==="
+
+    # Remove desktop entry
+    DESKTOP_DIR="$HOME/.local/share/applications"
+    if [ -f "$DESKTOP_DIR/tulip-tasks.desktop" ]; then
+        rm "$DESKTOP_DIR/tulip-tasks.desktop"
+        echo "Removed desktop entry"
+    fi
+
+    # Remove symlink from bin
+    BIN_DIR="$HOME/.local/bin"
+    if [ -L "$BIN_DIR/$APP_NAME" ]; then
+        rm "$BIN_DIR/$APP_NAME"
+        echo "Removed symlink"
+    fi
+
+    # Remove installation directory
+    INSTALL_DIR="$HOME/.local/tulip-tasks"
+    if [ -d "$INSTALL_DIR" ]; then
+        rm -rf "$INSTALL_DIR"
+        echo "Removed installation directory"
+    fi
+
+    # Remove PATH entries from shell profiles
+    for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
+        if [ -f "$rc" ] && grep -q "HOME/.local/bin" "$rc"; then
+            sed -i "/export PATH=\"\$HOME\/.local\/bin:\$PATH\"/d" "$rc"
+        fi
+    done
+
+    echo "=== Removal Complete ==="
+    echo "Tulip Tasks has been uninstalled from ~/.local/"
+    exit 0
 fi
 
-INSTALL_DIR="$HOME/.local/tulip-tasks"
-BIN_DIR="$HOME/.local/bin"
-DESKTOP_DIR="$HOME/.local/share/applications"
+# --- INSTALL MODE ---
+echo "=== Tulip Tasks $APP_VER Installation ==="
+echo "Installation directory: $HOME/.local/tulip-tasks"
+echo ""
 
 # Create directories
-mkdir -p "$INSTALL_DIR"
-mkdir -p "$BIN_DIR"
-mkdir -p "$DESKTOP_DIR"
-
-echo "=== Tulip Tasks $APP_VER Installation ==="
-echo "Installation directory: $INSTALL_DIR"
-echo ""
+mkdir -p "$HOME/.local/tulip-tasks"
+mkdir -p "$HOME/.local/bin"
+mkdir -p "$HOME/.local/share/applications"
 
 # Download the latest AppImage from GitHub releases
 LATEST_RELEASE_URL="https://api.github.com/repos/$REPO/releases/latest"
@@ -50,65 +97,81 @@ else
 fi
 
 # Extract the AppImage URL for the correct architecture
-if [ "$ARCH" = "x86_64" ]; then
+if [ "$APP_ARCH" = "x86_64" ]; then
     APPIMAGE_URL=$(echo "$RELEASE_INFO" | grep -oP '"browser_download_url": "\K.*linux_x86_64\.AppImage' | head -1)
 else
     APPIMAGE_URL=$(echo "$RELEASE_INFO" | grep -oP '"browser_download_url": "\K.*aarch64\.AppImage' | head -1)
 fi
 
 if [ -z "$APPIMAGE_URL" ]; then
-    echo "Error: Could not determine AppImage URL for $ARCH architecture."
-    echo "Available assets: $(echo "$RELEASE_INFO" | grep -oP '"name": "\K[^"]+' | tr '\n' ' ')"
+    echo "Error: Could not determine AppImage URL for $APP_ARCH architecture."
     exit 1
 fi
 
 echo "Downloading AppImage from: $APPIMAGE_URL"
-echo ""
 
 # Download the AppImage
-APPIMAGE_FILE="$INSTALL_DIR/tulip-tasks-$APP_VER-$ARCH.AppImage"
+APPIMAGE_PATH="$HOME/.local/tulip-tasks/tulip-tasks_${APP_VER}_linux_${APP_ARCH}.AppImage"
 if command -v curl &>/dev/null; then
-    curl -L "$APPIMAGE_URL" -o "$APPIMAGE_FILE"
+    curl -L "$APPIMAGE_URL" -o "$APPIMAGE_PATH"
 elif command -v wget &>/dev/null; then
-    wget -q "$APPIMAGE_URL" -O "$APPIMAGE_FILE"
+    wget -q "$APPIMAGE_URL" -O "$APPIMAGE_PATH"
 fi
 
-if [ ! -f "$APPIMAGE_FILE" ]; then
+if [ ! -f "$APPIMAGE_PATH" ]; then
     echo "Error: Failed to download AppImage."
     exit 1
 fi
 
-echo "AppImage downloaded successfully: $(basename "$APPIMAGE_FILE")"
-echo ""
+# Make AppImage executable
+chmod +x "$APPIMAGE_PATH"
 
-# Make the AppImage executable
-chmod +x "$APPIMAGE_FILE"
+# Create wrapper script in $HOME/.local/bin
+BIN_PATH="$HOME/.local/bin/tulip-tasks"
+cat > "$BIN_PATH" << WRAPPER_EOF
+#!/usr/bin/env bash
+exec "$HOME/.local/tulip-tasks/tulip-tasks_${APP_VER}_linux_${APP_ARCH}.AppImage" "\$@"
+WRAPPER_EOF
+chmod +x "$BIN_PATH"
 
-echo "Made AppImage executable."
-echo ""
-
-# Create symlink in .local/bin
-ln -sf "$APPIMAGE_FILE" "$BIN_DIR/$APP_NAME"
-
-echo "Created symlink: $BIN_DIR/$APP_NAME -> $APPIMAGE_FILE"
-echo ""
-
-# Create .desktop entry
-cat > "$DESKTOP_DIR/tulip-tasks.desktop" << DESKTOP_EOF
+# Create .desktop entry with icon
+DESKTOP_PATH="$HOME/.local/share/applications/tulip-tasks.desktop"
+cat > "$DESKTOP_PATH" << DESKTOP_EOF
 [Desktop Entry]
 Name=Tulip Tasks
 Comment=A neo-brutalist task board with calendar, backlog inbox and recurring tasks
-Exec=$BIN_DIR/$APP_NAME
+Exec=tulip-tasks
 Terminal=false
 Type=Application
+Icon=tulip-tasks
 Categories=Utility;Organization;
-Icon=$BIN_DIR/$APP_NAME
 X-Comment=Tulip Tasks $APP_VER
 DESKTOP_EOF
 
-chmod +x "$DESKTOP_DIR/tulip-tasks.desktop"
-echo "Created desktop entry: $DESKTOP_DIR/tulip-tasks.desktop"
-echo ""
+# Try to set up a proper icon by extracting from AppImage or using default
+ICON_SOURCE="$APPIMAGE_PATH"
+if [ -f "$ICON_SOURCE" ]; then
+    # Attempt to extract the .desktop file from the AppImage to get the icon
+    ICON_EXTRACTED=$("$ICON_SOURCE" --appimage-extract 2>/dev/null || true)
+    if [ -f "$HOME/.local/tulip-tasks/tulip-tasks.desktop" ]; then
+        grep -oP '"Icon":? ?"\\K[^"]+' "$HOME/.local/tulip-tasks/tulip-tasks.desktop" 2>/dev/null | \
+            while read -r icon_path; do
+                if [ -n "$icon_path" ]; then
+                    # Copy or link the icon to hicolor theme
+                    ICON_DIR="$HOME/.local/share/icons/hicolor/256x256/apps"
+                    mkdir -p "$ICON_DIR"
+                    if echo "$icon_path" | grep -q "/"; then
+                        # Absolute or relative path
+                        cp "$icon_path" "$ICON_DIR/tulip-tasks.png" 2>/dev/null || true
+                    else
+                        # Just a name - try to find it
+                        find / -name "$icon_path" -type f 2>/dev/null | head -1 | \
+                            xargs -I{} cp {} "$ICON_DIR/tulip-tasks.png" 2>/dev/null || true
+                    fi
+                fi
+            done
+    fi
+fi
 
 # Update PATH in shell profile if needed
 SHELL_RC="$HOME/.bashrc"
@@ -131,6 +194,7 @@ if command -v update-icon-caches &>/dev/null; then
     fi
 fi
 
+echo ""
 echo "=== Installation Complete ==="
 echo ""
 echo "Tulip Tasks is now installed in ~/.local/"
@@ -138,5 +202,7 @@ echo "You can launch it from terminal with: tulip-tasks"
 echo "Or via your application menu (if using a desktop environment)"
 echo ""
 echo "To update later, re-run this script."
+echo ""
+echo "To remove: bash install-tulip-tasks.sh -R"
 echo ""
 echo "Enjoy your task board! 🎯"

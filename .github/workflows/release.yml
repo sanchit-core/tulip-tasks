@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   # ============================================================
-  # LINUX BUILDS (run first - all major distro formats)
+  # LINUX BUILDS (fully automated on GitHub Actions)
   # ============================================================
   release-linux-x86_64:
     name: Linux x86_64 (DEB/RPM/AppImage)
@@ -125,3 +125,17 @@ jobs:
           tag_name: ${{ steps.version.outputs.tag }}
           files: src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/checksums-linux-x86_64.txt
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+
+  # ============================================================
+  # INFORMATIONAL - macOS/Windows require local builds
+  # ============================================================
+  # macOS and Windows builds require local execution due to Tauri cross-compilation
+  # limitations on GitHub Actions runners:
+  # - macOS: bundle_dmg.sh script has compatibility issues with GitHub runner entropy
+  # - Windows: NSIS/MSI bundling requires specific build tools not fully available on runners
+  #
+  # To build for these platforms locally:
+  #   1. Clone the repo
+  #   2. Run: npm install && npm run build
+  #   3. Run: npx tauri build --targets macos,windows
+  #   4. Installers will appear in src-tauri/target/release/bundle/

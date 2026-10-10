@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Tulip Tasks",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "identifier": "com.sanchixt.tuliptasks",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -41,82 +41,6 @@
     "shortDescription": "Neo-brutalist task board with calendar, backlog inbox and recurring tasks",
     "longDescription": "Tulip Tasks is a local-first kanban application with calendar view, backlog inbox, and recurring tasks. Built with Svelte 5 and Tauri 2. Features drag-and-drop boards, WIP limits, full-text search, tag/priority filters, command palette, desktop notifications, and JSON export/import.",
     "license": "MIT",
-    "licenseFile": "../../LICENSE",
-    "linux": {
-      "deb": {
-        "depends": [
-          "libwebkit2gtk-4.1-0",
-          "libayatana-appindicator3-1",
-          "librsvg2-2",
-          "libssl3"
-        ],
-        "section": "utils",
-        "priority": "optional",
-        "maintainer": "Sanchit <sanchit@users.noreply.github.com>"
-      },
-      "rpm": {
-        "license": "MIT",
-        "summary": "Neo-brutalist task board with calendar, backlog inbox and recurring tasks",
-        "description": "Tulip Tasks is a local-first kanban application with calendar view, backlog inbox, and recurring tasks. Built with Svelte 5 and Tauri 2.",
-        "release": "1",
-        "epoch": 0,
-        "vendor": "Sanchit",
-        "group": "Applications/Productivity",
-        "requires": [
-          "webkit2gtk4.1",
-          "libayatana-appindicator-gtk3",
-          "librsvg2",
-          "openssl-libs"
-        ]
-      },
-      "appimage": {
-        "bundleMediaFramework": false
-      }
-    },
-    "macos": {
-      "dmg": {
-        "background": "icons/dmg-background.png",
-        "windowPosition": {
-          "x": 200,
-          "y": 200
-        },
-        "windowSize": {
-          "width": 540,
-          "height": 380
-        },
-        "appPosition": {
-          "x": 135,
-          "y": 190
-        },
-        "appFolderPosition": {
-          "x": 405,
-          "y": 190
-        }
-      }
-    },
-    "windows": {
-      "nsis": {
-        "licenseFile": "../../LICENSE",
-        "installerIcon": "icons/icon.ico",
-        "installMode": "perMachine",
-        "allowToChangeInstallPath": true,
-        "oneClick": false,
-        "perMachine": true,
-        "createDesktopShortcut": true,
-        "createStartMenuShortcut": true,
-        "shortcutName": "Tulip Tasks",
-        "runAfterFinish": true
-      },
-      "msi": {
-        "licenseFile": "../../LICENSE",
-        "upgradeCode": "{12345678-1234-1234-1234-123456789012}",
-        "installMode": "perMachine",
-        "installerIcon": "icons/icon.ico",
-        "productIcon": "icons/icon.ico",
-        "shortcutName": "Tulip Tasks",
-        "createDesktopShortcut": true,
-        "createStartMenuShortcut": true
-      }
-    }
+    "licenseFile": "../../LICENSE"
   }
 }

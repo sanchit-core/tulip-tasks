@@ -100,7 +100,7 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
           generateReleaseNotes: false
           uploadUpdaterJson: false
-          args: --target x86_64-unknown-linux-gnu --bundle deb,rpm,appimage
+          args: --target x86_64-unknown-linux-gnu --bundles deb,rpm,appimage
           releaseAssetNamePattern: >-
             tulip-tasks_${{ steps.version.outputs.version }}_linux_x86_64.[ext]
 
@@ -217,7 +217,7 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
           generateReleaseNotes: false
           uploadUpdaterJson: false
-          args: --target aarch64-unknown-linux-gnu --bundle deb,rpm,appimage
+          args: --target aarch64-unknown-linux-gnu --bundles deb,rpm,appimage
           releaseAssetNamePattern: >-
             tulip-tasks_${{ steps.version.outputs.version }}_linux_aarch64.[ext]
 
@@ -313,7 +313,7 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
           generateReleaseNotes: false
           uploadUpdaterJson: false
-          args: --target aarch64-apple-darwin --bundle dmg
+          args: --target aarch64-apple-darwin --bundles dmg
           releaseAssetNamePattern: >-
             tulip-tasks_${{ steps.version.outputs.version }}_macos_aarch64.[ext]
 
@@ -406,7 +406,7 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
           generateReleaseNotes: false
           uploadUpdaterJson: false
-          args: --target x86_64-apple-darwin --bundle dmg
+          args: --target x86_64-apple-darwin --bundles dmg
           releaseAssetNamePattern: >-
             tulip-tasks_${{ steps.version.outputs.version }}_macos_x86_64.[ext]
 
@@ -502,7 +502,7 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
           generateReleaseNotes: false
           uploadUpdaterJson: false
-          args: --target x86_64-pc-windows-msvc --bundle msi,nsis
+          args: --target x86_64-pc-windows-msvc --bundles msi,nsis
           releaseAssetNamePattern: >-
             tulip-tasks_${{ steps.version.outputs.version }}_windows_x86_64.[ext]
 

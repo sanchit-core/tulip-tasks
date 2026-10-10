@@ -116,23 +116,15 @@
   <div class="sec">
     <h4>Appearance</h4>
     <NeuToggle
-      checked={s.useSystemTheme !== false}
-      label="Follow system theme (light/dark)"
-      onchange={(v) => store.updateSettings({ useSystemTheme: !v })}>
+      checked={s.theme !== "neo-brutalist"}
+      label="Force dark mode"
+      onchange={(v) => store.updateSettings({ theme: v ? "dark" : "neo-brutalist" })}>
     </NeuToggle>
-    {#if s.useSystemTheme !== false}
-      <p class="tiny muted">App will follow your OS light/dark setting</p>
-    {/if}
-    {#if s.useSystemTheme === false}
+    {#if s.theme !== "neo-brutalist"}
       <NeuToggle
-        checked={s.theme === "dark"}
-        label="Dark mode"
-        onchange={(v) => store.updateSettings({ theme: v ? "dark" : "neo-brutalist" })}>
-      </NeuToggle>
-      <NeuToggle
-        checked={s.theme === "neo-brutalist"}
-        label="Light mode (neo-brutalist)"
-        onchange={(v) => store.updateSettings({ theme: v ? "neo-brutalist" : "flat" })}>
+        checked={s.theme !== "flat"}
+        label="Force flat theme"
+        onchange={(v) => store.updateSettings({ theme: v ? "flat" : "neo-brutalist" })}>
       </NeuToggle>
     {/if}
   </div>
@@ -161,9 +153,9 @@
     </div>
   </div>
 
-  <footer class="modal-footer">
+  {#snippet footer()}
     <NeuButton onclick={() => (open = false)}>Close</NeuButton>
-  </footer>
+  {/snippet}
 </Modal>
 
 <ConfirmModal

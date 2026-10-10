@@ -11,11 +11,16 @@
 
   $effect(() => {
     if (!ready || typeof document === "undefined") return;
-    // Apply the theme from store settings
-    if (store.workspace.settings.theme === "dark") {
+    // Apply the theme from store settings, defaulting to system
+    const storedTheme = store.workspace.settings.theme;
+    if (storedTheme === "dark") {
       document.documentElement.dataset.theme = "dark";
+    } else if (storedTheme === "neo-brutalist") {
+      document.documentElement.dataset.theme = "neo-brutalist";
     } else {
-      document.documentElement.dataset.theme = store.workspace.settings.theme;
+      // Default to system preference for other themes
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme = prefersDark ? "dark" : storedTheme;
     }
   });
 
@@ -23,11 +28,15 @@
     store.boot().then(() => {
       ready = true;
       if (typeof document !== "undefined") {
-        // Re-apply after store is ready - this ensures the theme is set correctly
-        if (store.workspace.settings.theme === "dark") {
+        // Re-apply after store is ready
+        const storedTheme = store.workspace.settings.theme;
+        if (storedTheme === "dark") {
           document.documentElement.dataset.theme = "dark";
+        } else if (storedTheme === "neo-brutalist") {
+          document.documentElement.dataset.theme = "neo-brutalist";
         } else {
-          document.documentElement.dataset.theme = store.workspace.settings.theme;
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.dataset.theme = prefersDark ? "dark" : storedTheme;
         }
       }
       if (store.workspace.settings.notificationsEnabled && isDesktop()) {

@@ -78,9 +78,7 @@ export interface Settings {
   wipWarnings: boolean;
   /** Hide the window titlebar/decorations entirely. */
   hideTitlebar: boolean;
-  /** Use system theme (light/dark) automatically. */
-  useSystemTheme: boolean;
-  /** Force a specific theme, overrides useSystemTheme. */
+  /** Visual design theme. */
   theme: Theme;
 }
 
@@ -89,7 +87,6 @@ export const DEFAULT_SETTINGS: Settings = {
   notifyHour: 9,
   wipWarnings: true,
   hideTitlebar: false,
-  useSystemTheme: false,
   theme: "neo-brutalist",
 };
 

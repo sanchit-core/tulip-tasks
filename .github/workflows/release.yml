@@ -33,6 +33,7 @@ jobs:
 
       - name: Extract version from tag
         id: version
+        shell: bash
         run: |
           TAG="${{ github.event.inputs.tag || github.ref_name }}"
           VERSION="${TAG#v}"
@@ -143,6 +144,7 @@ jobs:
 
       - name: Extract version from tag
         id: version
+        shell: bash
         run: |
           TAG="${{ github.event.inputs.tag || github.ref_name }}"
           VERSION="${TAG#v}"
@@ -236,6 +238,7 @@ jobs:
 
       - name: Extract version from tag
         id: version
+        shell: bash
         run: |
           TAG="${{ github.event.inputs.tag || github.ref_name }}"
           VERSION="${TAG#v}"

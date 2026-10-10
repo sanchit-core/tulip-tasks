@@ -161,15 +161,27 @@ An AUR package is maintained at:
 
 <https://aur.archlinux.org/packages/tulip-tasks/>
 
-It packages the AppImage and provides a `.install` script. To build it locally:
+It packages the AppImage and provides a `.install` script.
+
+**Without an AUR account**, you can build and install this package locally:
 
 ```bash
-git clone https://aur.archlinux.org/tulip-tasks.git
-cd tulip-tasks
+# From this repository
+cd aur
 makepkg -si
 ```
 
-The PKGBUILD downloads the latest AppImage from the GitHub releases and creates an Arch package. The `PKGBUILD` in this repository (`aur/PKGBUILD`) can be used as a reference or started point. See the [AUR webseite](https://aur.archlinux.org/packages/tulip-tasks/) for the official package build script and maintainer information.
+Or use the provided installation script:
+
+```bash
+bash install-tulip-tasks.sh
+```
+
+The `PKGBUILD` in this repository (`aur/PKGBUILD`) downloads the AppImage from the GitHub release
+and creates an Arch Linux package. It does not require pushing to the AUR.
+
+See the [AUR webseite](https://aur.archlinux.org/packages/tulip-tasks/) for the
+official package and maintainer information.
 
 ### CI/CD status
 

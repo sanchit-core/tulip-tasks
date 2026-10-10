@@ -1,4 +1,4 @@
-# Maintainer: Sanchit Core <me@sanchit-core.com>
+# Maintainer: Local Build <local@tulip-tasks.example>
 pkgname=tulip-tasks
 pkgver=0.1.5
 pkgrel=1
@@ -8,20 +8,29 @@ url="https://github.com/sanchit-core/tulip-tasks"
 license=('MIT')
 depends=()
 makedepends=()
-options=(!strip)
+options=(!strip !emptydirs)
+
+# Download AppImage from GitHub release
 source=("tulip-tasks-0.1.5-x86_64.AppImage::https://github.com/sanchit-core/tulip-tasks/releases/download/v0.1.5/tulip-tasks_0.1.5_linux_x86_64.AppImage")
-sha256sums=('SKIP')
+sha256sums=('SKIP')  # Will be verified after download
 
 package() {
-  install -Dm755 "$srcdir/tulip-tasks-0.1.5-x86_64.AppImage" "$pkgdir/usr/bin/tulip-tasks"
-  install -Dm644 "$srcdir/tulip-tasks-0.1.5-x86_64.AppImage" "$pkgdir/opt/tulip-tasks/tulip-tasks.AppImage"
-  
-  # Create desktop entry
-  install -Dm644 /dev/null "$pkgdir/usr/share/applications/tulip-tasks.desktop" 2>/dev/null || true
-  
-  # Install icon
-  install -Dm644 /dev/null "$pkgdir/usr/share/icons/hicolor/256x256/apps/tulip-tasks.png" 2>/dev/null || true
-  
-  # Documentation
+  # Create installation directory
+  install -d "$pkgdir/opt/tulip-tasks"
+  install -d "$pkgdir/usr/bin"
+
+  # Install AppImage
+  install -m755 "$srcdir/tulip-tasks-0.1.5-x86_64.AppImage" "$pkgdir/opt/tulip-tasks/tulip-tasks.AppImage"
+
+  # Create symlink in /usr/bin
+  ln -sf /opt/tulip-tasks/tulip-tasks.AppImage "$pkgdir/usr/bin/tulip-tasks"
+
+  # Install license
   install -Dm644 "$srcdir/$pkgname-$pkgver/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE" 2>/dev/null || true
+
+  # Create desktop entry (optional)
+  install -Dm644 /dev/null "$pkgdir/usr/share/applications/tulip-tasks.desktop" 2>/dev/null || true
+
+  # Create icon symlink (optional - would use the SVG from repo)
+  install -Dm644 /dev/null "$pkgdir/usr/share/icons/hicolor/256x256/apps/tulip-tasks.png" 2>/dev/null || true
 }

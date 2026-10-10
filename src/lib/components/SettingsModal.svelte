@@ -8,7 +8,7 @@
   import NeuToggle from "./NeuToggle.svelte";
   import NeuBadge from "./NeuBadge.svelte";
   import ConfirmModal from "./ConfirmModal.svelte";
-  import { THEMES, type Theme, type Settings } from "$lib/types";
+  import { THEMES, type Theme } from "$lib/types";
   import { toast } from "$lib/toasts";
 
   const THEME_LABELS: Record<Theme, string> = {
@@ -76,8 +76,8 @@
         value={String(s.notifyHour)}
         onchange={(e) => store.updateSettings({ notifyHour: Number(e.currentTarget.value) })}
       >
-        {#each Array.from({ length: 24 }, (_, hour) => hour) as hour (hour)}
-          <option value={String(hour)}>{String(hour).padStart(2, "0")}:00</option>
+        {#each Array.from({ length: 24 }, (_, i) => i) as h (h)}
+          <option value={String(h)}>{String(h).padStart(2, "0")}:00</option>
         {/each}
       </select>
     </label>
@@ -114,21 +114,24 @@
   </div>
 
   <div class="sec">
-    <h4>Theme Mode</h4>
+    <h4>Appearance</h4>
     <NeuToggle
-      checked={s.useSystemTheme}
+      checked={s.useSystemTheme !== false}
       label="Follow system theme (light/dark)"
-      onchange={(v) => store.updateSettings({ useSystemTheme: v })}>
+      onchange={(v) => store.updateSettings({ useSystemTheme: !v })}>
     </NeuToggle>
-    {#if !s.useSystemTheme}
+    {#if s.useSystemTheme !== false}
+      <p class="tiny muted">App will follow your OS light/dark setting</p>
+    {/if}
+    {#if s.useSystemTheme === false}
       <NeuToggle
         checked={s.theme === "dark"}
-        label="Force dark mode"
+        label="Dark mode"
         onchange={(v) => store.updateSettings({ theme: v ? "dark" : "neo-brutalist" })}>
       </NeuToggle>
       <NeuToggle
         checked={s.theme === "neo-brutalist"}
-        label="Force light mode (neo-brutalist)"
+        label="Light mode (neo-brutalist)"
         onchange={(v) => store.updateSettings({ theme: v ? "neo-brutalist" : "flat" })}>
       </NeuToggle>
     {/if}
@@ -158,9 +161,9 @@
     </div>
   </div>
 
-  {#snippet footer()}
+  <footer class="modal-footer">
     <NeuButton onclick={() => (open = false)}>Close</NeuButton>
-  {/snippet}
+  </footer>
 </Modal>
 
 <ConfirmModal

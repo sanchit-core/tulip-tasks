@@ -8,20 +8,14 @@
   let { children }: { children?: import("svelte").Snippet } = $props();
 
   let ready = $state(false);
-  let themeMode = $state("system"); // "system", "light", or "dark"
 
   $effect(() => {
     if (!ready || typeof document === "undefined") return;
-
-    // Apply the user's theme preference first
-    if (themeMode === "light") {
-      document.documentElement.dataset.theme = "neo-brutalist";
-    } else if (themeMode === "dark") {
+    // Apply the theme from store settings
+    if (store.workspace.settings.theme === "dark") {
       document.documentElement.dataset.theme = "dark";
     } else {
-      // System preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      document.documentElement.dataset.theme = prefersDark ? "dark" : "neo-brutalist";
+      document.documentElement.dataset.theme = store.workspace.settings.theme;
     }
   });
 
@@ -29,14 +23,11 @@
     store.boot().then(() => {
       ready = true;
       if (typeof document !== "undefined") {
-        // Apply stored preference after store is ready
-        if (store.workspace.settings.useSystemTheme) {
-          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          document.documentElement.dataset.theme = prefersDark ? "dark" : "neo-brutalist";
-        } else if (store.workspace.settings.theme === "dark") {
+        // Re-apply after store is ready - this ensures the theme is set correctly
+        if (store.workspace.settings.theme === "dark") {
           document.documentElement.dataset.theme = "dark";
         } else {
-          document.documentElement.dataset.theme = "neo-brutalist";
+          document.documentElement.dataset.theme = store.workspace.settings.theme;
         }
       }
       if (store.workspace.settings.notificationsEnabled && isDesktop()) {

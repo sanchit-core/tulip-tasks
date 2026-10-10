@@ -66,6 +66,7 @@
   --bg-dots: radial-gradient(rgba(23, 23, 23, 0.06) 1.5px, transparent 1.5px);
 }
 
+/* Light themes */
 :root[data-theme="neo-brutalist"] {
   --border-active: var(--ink);
   --radius-xl: 14px;
@@ -89,6 +90,7 @@
   --bg-dots: radial-gradient(rgba(23, 23, 23, 0.06) 1.5px, transparent 1.5px);
 }
 
+/* Neo-brutalist neumorphism */
 :root[data-theme="neumorphism"] {
   --border-active: rgba(23, 23, 23, 0.28);
   --radius-xl: 16px;
@@ -105,13 +107,14 @@
   --shadow-micro: 2px 2px 4px rgba(23, 23, 23, 0.1), -1px -1px 2px rgba(255, 255, 255, 0.9);
   --shadow-pressed: inset 3px 3px 6px rgba(23, 23, 23, 0.08), inset -2px -2px 4px rgba(255, 255, 255, 0.9);
   --shadow-inset: inset 3px 3px 6px rgba(23, 23, 23, 0.08), inset -2px -2px 4px rgba(255, 255, 255, 0.9);
-  --shadow-inset-tight: inset 2px 2px 4px rgba(23, 23, 23, 0.08), inset -1px -1px 2px rgba(255, 255, 255, 0.9);
+  --shadow-inset-tight: inset 2px 2px 4px rgba(23, 23, 23, 0.08), inset -1px -1px 2px rgba(23, 23, 23, 0.08);
   --shadow-pop: 16px 16px 40px rgba(23, 23, 23, 0.14), -12px -12px 24px rgba(255, 255, 255, 0.95);
   --press-shift: 0 0;
   --press-shift-sm: 0 0;
   --bg-dots: none;
 }
 
+/* Flat theme */
 :root[data-theme="flat"] {
   --border-active: var(--ink);
   --radius-xl: 10px;
@@ -135,6 +138,7 @@
   --bg-dots: none;
 }
 
+/* Minimal theme */
 :root[data-theme="minimal"] {
   --border-active: var(--primary);
   --radius-xl: 8px;
@@ -158,190 +162,100 @@
   --bg-dots: none;
 }
 
-* {
-  box-sizing: border-box;
+/* Dark theme - inverted colors for night reading */
+:root[data-theme="dark"] {
+  --ink: #f3efe6;
+  --paper: #171717;
+  --surface: #1e1e1e;
+  --surface-2: #2d2d2d;
+  --surface-3: #3d3d3d;
+
+  --text-1: #f3efe6;
+  --text-2: #686868;
+  --text-3: #a0a0a0;
+  --text-on-primary: #171717;
+
+  --primary: #ff6b9d;
+  --primary-strong: #e84393;
+  --primary-soft: #ff8fab;
+  --primary-ink: #e6395a;
+
+  --accent: #ffe886;
+  --accent-soft: #ffd55f;
+
+  --urgent: #ff4d4d;
+  --urgent-soft: #ff6b6b;
+  --high: #ffb347;
+  --high-soft: #ffcc80;
+  --medium: #60a5fa;
+  --medium-soft: #67e8f9;
+  --low: #22c55e;
+  --low-soft: #4ade80;
+
+  --violet: #a78bfa;
+  --violet-soft: #c4b5fd;
+
+  --danger: #f87171;
+  --danger-soft: #fca5a5;
+
+  --radius-xl: 14px;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 4px;
+
+  --border: 3px solid var(--ink);
+  --border-thin: 2px solid var(--ink);
+  --border-hair: 1px solid var(--ink);
+  --border-active: var(--ink);
+
+  --shadow-raised: 5px 5px 0 var(--ink);
+  --shadow-raised-lg: 8px 8px 0 var(--ink);
+  --shadow-flat: 3px 3px 0 var(--ink);
+  --shadow-hair: 2px 2px 0 var(--ink);
+  --shadow-micro: 1px 1px 0 var(--ink);
+  --shadow-pressed: 1px 1px 0 var(--ink);
+  --shadow-inset: inset 3px 3px 0 rgba(255, 255, 23, 0.08);
+  --shadow-inset-tight: inset 2px 2px 0 rgba(255, 255, 23, 0.08);
+  --shadow-pop: 10px 10px 0 var(--ink);
+  --press-shift: 3px 3px;
+  --press-shift-sm: 2px 2px;
+
+  --t: 0.16s cubic-bezier(0.2, 0.9, 0.3, 1);
+  --font: "Nunito", "Avenir Next", -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans",
+    "Helvetica Neue", Arial, sans-serif;
+  --sidebar-w: 252px;
+  --titlebar-h: 44px;
+  --header-h: 68px;
+  --bg-dots: radial-gradient(rgba(255, 255, 255, 0.03) 1.5px, transparent 1.5px);
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow-x: hidden;
+/* Dark theme overrides for neo-brutalist specific variables */
+:root[data-theme="dark"] .neo-brutalist * {
+  --ink: #f3efe6;
+  --paper: #171717;
 }
 
-@supports (overflow-x: clip) {
-  html,
-  body {
-    overflow-x: clip;
-  }
+/* Ensure text readability on dark theme */
+:root[data-theme="dark"] * {
+  color-scheme: dark;
 }
 
-body {
-  font-family: var(--font);
-  color: var(--text-1);
-  background-color: var(--paper);
-  background-image: var(--bg-dots);
-  background-size: 24px 24px;
-  background-attachment: fixed;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-size: 15px;
-  line-height: 1.5;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-input,
-select,
-textarea,
-button {
-  font-family: inherit;
-  font-size: inherit;
-  color: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-a {
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 700;
-}
-
-h1,
-h2,
-h3,
-h4 {
-  margin: 0;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  color: var(--text-1);
-}
-
-img,
-svg,
-canvas {
-  max-width: 100%;
-}
-
-.muted {
-  color: var(--text-2);
-}
-.muted-3 {
-  color: var(--text-3);
-}
-.small {
-  font-size: 13px;
-}
-.tiny {
-  font-size: 12px;
-}
-.mono {
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.col {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.spacer {
-  flex: 1;
-}
-.wrap {
-  flex-wrap: wrap;
-}
-
-.chip-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-input,
-select,
-textarea {
-  user-select: text;
-  -webkit-user-select: text;
-}
-
-select {
-  appearance: none;
-  background: var(--surface);
-  border: var(--border);
-  border-radius: var(--radius-md);
-  padding: 6px 28px 6px 10px;
-  font-weight: 700;
-  color: var(--text-1);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23171717' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 16px;
-  cursor: pointer;
-}
-select:hover {
-  border-color: var(--primary-strong);
-}
-select:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--primary-soft);
-}
-
-::selection {
-  background: var(--accent);
-  color: var(--ink);
-}
-
-::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
+/* Ensure scrollbar visibility on dark theme */
+:root[data-theme="dark"] ::-webkit-scrollbar-thumb {
   background: var(--ink);
-  border-radius: 0;
   border: 2px solid var(--paper);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-strong);
-}
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+/* Reduced motion for dark theme */
+:root[data-theme="dark"] * {
+  @media (prefers-reduced-motion: reduce) {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Focus ring on dark theme */
+:root[data-theme="dark"] :focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }

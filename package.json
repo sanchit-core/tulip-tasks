@@ -1,6 +1,6 @@
 {
   "name": "tulip-tasks",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Tulip Tasks — a neo-brutalist task board with calendar, backlog inbox and recurring tasks",
   "type": "module",
   "scripts": {

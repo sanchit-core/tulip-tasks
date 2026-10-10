@@ -183,8 +183,7 @@ jobs:
             | Platform | Installers |
             | --- | --- |
             | Linux (x86_64) | `.deb`, `.rpm`, `.AppImage` |
-            | macOS | .dmg (build locally) |
-            | **Windows (x86_64)** | `.msi`, `-setup.exe` (NSIS) |
+            | Windows (x86_64) | `.msi`, `-setup.exe` (NSIS) |
 
             ### Verification
             SHA256 checksums are attached as `checksums.txt`.
@@ -219,74 +218,3 @@ jobs:
           tag_name: ${{ steps.version.outputs.tag }}
           files: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/checksums-windows-x86_64.txt
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
-
-  # ============================================================
-  # MACOS BUILD (informational - DMG requires local execution)
-  # ============================================================
-  release-macos-informational:
-    name: macOS (DMG - build locally)
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Extract version from tag
-        id: version
-        shell: bash
-        run: |
-          TAG="${{ github.event.inputs.tag || github.ref_name }}"
-          VERSION="${TAG#v}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-apple-darwin
-
-      - uses: swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri -> target
-          key: macos-x86_64-${{ steps.version.outputs.version }}
-
-      - name: Install frontend dependencies
-        run: npm ci
-
-      - name: Build macOS app bundle (no DMG)
-        uses: tauri-apps/tauri-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tauriScript: npx tauri
-          tagName: ${{ steps.version.outputs.tag }}
-          releaseName: Tulip Tasks ${{ steps.version.outputs.tag }}
-          releaseBody: |
-            ## Tulip Tasks ${{ steps.version.outputs.tag }}
-
-            Neo-brutalist task board with calendar, backlog inbox and recurring tasks.
-
-            ### Changes
-            ${{ github.event.inputs.tag && format('Built from existing tag {0}', github.event.inputs.tag) || 'See commit history for changes.' }}
-
-            ### Platforms
-            | Platform | Installers |
-            | --- | --- |
-            | Linux (x86_64) | `.deb`, `.rpm`, `.AppImage` |
-            | Windows (x86_64) | `.msi`, `-setup.exe` (NSIS) |
-            | macOS | App bundle built locally (.app), DMG requires local execution |
-
-            > **Note:** The `bundle_dmg.sh` script used by Tauri for DMG generation has compatibility issues with GitHub Actions macOS runners. DMG files should be built locally using `npm run build` and then `npx tauri bundle --target dmg`. The app bundle (.app) is uploaded as an artifact.
-          args: --bundles app
-
-      - name: Upload app bundle artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-app-bundle
-          path: src-tauri/target/x86_64-apple-darwin/release/bundle/macos/Tulip Tasks.app
-          retention-days: 90

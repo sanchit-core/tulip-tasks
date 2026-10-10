@@ -88,7 +88,6 @@ jobs:
             | Platform | Installers |
             | --- | --- |
             | **Linux (x86_64)** | `.deb` (Debian/Ubuntu), `.rpm` (Fedora/RHEL), `.AppImage` (universal) |
-            | Linux (aarch64) | `.deb`, `.rpm`, `.AppImage` |
             | macOS (Apple Silicon) | `.dmg` |
             | macOS (Intel) | `.dmg` |
             | Windows (x86_64) | `.msi`, `-setup.exe` (NSIS) |
@@ -127,129 +126,12 @@ jobs:
           files: src-tauri/target/release/bundle/checksums-linux-x86_64.txt
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
 
-  release-linux-aarch64:
-    name: Linux aarch64 (DEB/RPM/AppImage)
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Extract version from tag
-        id: version
-        run: |
-          TAG="${{ github.event.inputs.tag || github.ref_name }}"
-          VERSION="${TAG#v}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-unknown-linux-gnu
-
-      - name: Install Linux aarch64 build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends -y \
-            build-essential \
-            curl \
-            file \
-            libayatana-appindicator3-dev \
-            librsvg2-dev \
-            libssl-dev \
-            libwebkit2gtk-4.1-dev \
-            libxdo-dev \
-            patchelf \
-            rpm \
-            wget \
-            xdg-utils \
-            gcc-aarch64-linux-gnu \
-            g++-aarch64-linux-gnu
-
-      - name: Set cross-compilation env
-        run: |
-          echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
-          echo "CC_aarch64_unknown_linux_gnu=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
-          echo "CXX_aarch64_unknown_linux_gnu=aarch64-linux-gnu-g++" >> $GITHUB_ENV
-
-      - uses: swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri -> target
-          key: linux-aarch64-${{ steps.version.outputs.version }}
-
-      - name: Install frontend dependencies
-        run: npm ci
-
-      - name: Build Linux aarch64 installers (DEB, RPM, AppImage)
-        uses: tauri-apps/tauri-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tauriScript: npx tauri
-          tagName: ${{ steps.version.outputs.tag }}
-          releaseName: Tulip Tasks ${{ steps.version.outputs.tag }}
-          releaseBody: |
-            ## Tulip Tasks ${{ steps.version.outputs.tag }}
-
-            Neo-brutalist task board with calendar, backlog inbox and recurring tasks.
-
-            ### Changes
-            ${{ github.event.inputs.tag && format('Built from existing tag {0}', github.event.inputs.tag) || 'See commit history for changes.' }}
-
-            ### Platforms
-            | Platform | Installers |
-            | --- | --- |
-            | **Linux (x86_64)** | `.deb` (Debian/Ubuntu), `.rpm` (Fedora/RHEL), `.AppImage` (universal) |
-            | **Linux (aarch64)** | `.deb`, `.rpm`, `.AppImage` |
-            | macOS (Apple Silicon) | `.dmg` |
-            | macOS (Intel) | `.dmg` |
-            | Windows (x86_64) | `.msi`, `-setup.exe` (NSIS) |
-
-            ### Verification
-            SHA256 checksums are attached as `checksums.txt`.
-
-            > **Note:** These artifacts are unsigned. Your OS will show a security warning on first launch.
-          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
-          generateReleaseNotes: false
-          uploadUpdaterJson: false
-          args: --target aarch64-unknown-linux-gnu --bundles deb,rpm,appimage
-          releaseAssetNamePattern: >-
-            tulip-tasks_${{ steps.version.outputs.version }}_linux_aarch64.[ext]
-
-      - name: Generate SHA256 checksums (Linux aarch64)
-        if: success()
-        run: |
-          cd src-tauri/target/release/bundle
-          find . -type f \( -name "*.deb" -o -name "*.rpm" -o -name "*.AppImage" \) -exec sha256sum {} + > checksums-linux-aarch64.txt
-          cat checksums-linux-aarch64.txt
-
-      - name: Upload checksums artifact (Linux aarch64)
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: checksums-linux-aarch64
-          path: src-tauri/target/release/bundle/checksums-linux-aarch64.txt
-          retention-days: 90
-
-      - name: Attach checksums to release (Linux aarch64)
-        if: success()
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          files: src-tauri/target/release/bundle/checksums-linux-aarch64.txt
-          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
-
   # ============================================================
   # MACOS BUILDS (run after Linux)
   # ============================================================
   release-macos-aarch64:
     name: macOS Apple Silicon (DMG)
-    needs: [release-linux-x86_64, release-linux-aarch64]
+    needs: [release-linux-x86_64]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -300,8 +182,7 @@ jobs:
             ### Platforms
             | Platform | Installers |
             | --- | --- |
-            | Linux (x86_64) | `.deb`, `.rpm`, `.AppImage` |
-            | Linux (aarch64) | `.deb`, `.rpm`, `.AppImage` |
+            | **Linux (x86_64)** | `.deb` (Debian/Ubuntu), `.rpm` (Fedora/RHEL), `.AppImage` (universal) |
             | **macOS (Apple Silicon)** | `.dmg` |
             | macOS (Intel) | `.dmg` |
             | Windows (x86_64) | `.msi`, `-setup.exe` (NSIS) |
@@ -342,7 +223,7 @@ jobs:
 
   release-macos-x86_64:
     name: macOS Intel (DMG)
-    needs: [release-linux-x86_64, release-linux-aarch64]
+    needs: [release-linux-x86_64]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -394,7 +275,6 @@ jobs:
             | Platform | Installers |
             | --- | --- |
             | Linux (x86_64) | `.deb`, `.rpm`, `.AppImage` |
-            | Linux (aarch64) | `.deb`, `.rpm`, `.AppImage` |
             | macOS (Apple Silicon) | `.dmg` |
             | **macOS (Intel)** | `.dmg` |
             | Windows (x86_64) | `.msi`, `-setup.exe` (NSIS) |
@@ -490,7 +370,6 @@ jobs:
             | Platform | Installers |
             | --- | --- |
             | Linux (x86_64) | `.deb`, `.rpm`, `.AppImage` |
-            | Linux (aarch64) | `.deb`, `.rpm`, `.AppImage` |
             | macOS (Apple Silicon) | `.dmg` |
             | macOS (Intel) | `.dmg` |
             | **Windows (x86_64)** | `.msi`, `-setup.exe` (NSIS) |

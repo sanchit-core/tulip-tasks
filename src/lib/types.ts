@@ -66,9 +66,9 @@ export interface Board {
   createdAt: string;
 }
 
-export type Theme = "neo-brutalist" | "neumorphism" | "flat" | "minimal";
+export type Theme = "neo-brutalist" | "neumorphism" | "flat" | "minimal" | "dark";
 
-export const THEMES: readonly Theme[] = ["neo-brutalist", "neumorphism", "flat", "minimal"];
+export const THEMES: readonly Theme[] = ["neo-brutalist", "neumorphism", "flat", "minimal", "dark"];
 
 export interface Settings {
   notificationsEnabled: boolean;
@@ -78,7 +78,9 @@ export interface Settings {
   wipWarnings: boolean;
   /** Hide the window titlebar/decorations entirely. */
   hideTitlebar: boolean;
-  /** Visual design theme. */
+  /** Use system theme (light/dark) automatically. */
+  useSystemTheme: boolean;
+  /** Force a specific theme, overrides useSystemTheme. */
   theme: Theme;
 }
 
@@ -87,6 +89,7 @@ export const DEFAULT_SETTINGS: Settings = {
   notifyHour: 9,
   wipWarnings: true,
   hideTitlebar: false,
+  useSystemTheme: false,
   theme: "neo-brutalist",
 };
 

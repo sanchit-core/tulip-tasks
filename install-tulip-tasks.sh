@@ -3,8 +3,7 @@
 # Tulip Tasks local installation script
 # Installs the app into ~/.local/ without system-wide changes
 #
-# Usage: ./install-tulip-tasks.sh
-#        OR  bash install-tulip-tasks.sh
+# Usage: bash install-tulip-tasks.sh
 #
 
 set -euo pipefail
@@ -26,10 +25,12 @@ fi
 
 INSTALL_DIR="$HOME/.local/tulip-tasks"
 BIN_DIR="$HOME/.local/bin"
+DESKTOP_DIR="$HOME/.local/share/applications"
 
 # Create directories
 mkdir -p "$INSTALL_DIR"
 mkdir -p "$BIN_DIR"
+mkdir -p "$DESKTOP_DIR"
 
 echo "=== Tulip Tasks $APP_VER Installation ==="
 echo "Installation directory: $INSTALL_DIR"
@@ -92,11 +93,7 @@ ln -sf "$APPIMAGE_FILE" "$BIN_DIR/$APP_NAME"
 echo "Created symlink: $BIN_DIR/$APP_NAME -> $APPIMAGE_FILE"
 echo ""
 
-# Create a desktop entry directory if needed
-DESKTOP_DIR="$HOME/.local/share/applications"
-mkdir -p "$DESKTOP_DIR"
-
-# Create a .desktop file for the application
+# Create .desktop entry
 cat > "$DESKTOP_DIR/tulip-tasks.desktop" << DESKTOP_EOF
 [Desktop Entry]
 Name=Tulip Tasks
@@ -105,7 +102,8 @@ Exec=$BIN_DIR/$APP_NAME
 Terminal=false
 Type=Application
 Categories=Utility;Organization;
-Icon=tulip-tasks
+Icon=$BIN_DIR/$APP_NAME
+X-Comment=Tulip Tasks $APP_VER
 DESKTOP_EOF
 
 chmod +x "$DESKTOP_DIR/tulip-tasks.desktop"
@@ -123,6 +121,14 @@ SHELL_RC="$HOME/.zshrc"
 if [ -f "$SHELL_RC" ] && ! grep -q "HOME/.local/bin" "$SHELL_RC"; then
     echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_RC"
     echo "Added \$HOME/.local/bin to PATH in $SHELL_RC"
+fi
+
+# Also update system icon cache if possible
+if command -v update-icon-caches &>/dev/null; then
+    LOCAL_ICON_DIR="$HOME/.local/share/icons/hicolor"
+    if [ -d "$LOCAL_ICON_DIR" ]; then
+        update-icon-caches "$LOCAL_ICON_DIR" 2>/dev/null || true
+    fi
 fi
 
 echo "=== Installation Complete ==="

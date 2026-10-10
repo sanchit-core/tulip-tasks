@@ -121,19 +121,17 @@ src/
 src-tauri/                Rust shell: opener, notification, dialog, fs plugins
 ```
 
-## Stack notes
+## Dark mode
 
-- **Svelte 5 runes** throughout (`$state` / `$derived` / `$effect`). The store is a
-  class in `store.svelte.ts`, which is why it is `.svelte.ts` and not `.ts`.
-- **No runtime dependencies** beyond the four Tauri plugins. Drag-and-drop,
-  the command palette and the calendar are all hand-written.
-- **SPA mode** via `adapter-static` with an `index.html` fallback, because Tauri
-  has no Node server. `ssr` and `prerender` are both off.
-- Dates are handled as local-time `yyyy-mm-dd` strings end to end. Never
-  `toISOString()` for a calendar date — it shifts to UTC and moves tasks a day.
-- Drop indices are translated from the *filtered* list to the raw sibling list
-  (`store.visibleToRaw`), so dragging while a filter is active lands in the right
-  place instead of jumping.
+Tulip Tasks supports system theme detection and manual light/dark mode selection:
+
+- **Follow system**: The app automatically uses your operating system's light/dark preference
+- **Force light mode**: Always use the neo-brutalist light theme
+- **Force dark mode**: Always use the dark theme
+
+Theme settings are available in the app's Settings modal (accessible via the gear icon
+or command palette <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>K</kbd>). The preference is saved
+locally and persists across launches.
 
 ## Scripts
 
@@ -145,48 +143,58 @@ src-tauri/                Rust shell: opener, notification, dialog, fs plugins
 | `npm run tauri dev` | Desktop app with hot reload |
 | `npm run tauri build` | Packaged desktop binary |
 
-## Building for different platforms
+## Installing on other Linux distributions
 
-The Tauri CLI can build for all three platforms from a development machine:
-
-| Platform | Command | Output |
-| --- | --- | --- |
-| **Linux x86_64** | `npm run tauri build` | `deb`, `rpm`, `AppImage` + `checksums.txt` |
-| **macOS** | `npm run tauri build` | `Tulip Tasks.app` bundle, `*.dmg` (requires local execution on macOS) |
-| **Windows** | `npm run tauri build` | `*.msi` (WiX), `*.exe` (NSIS) |
-
-### AUR (Arch Linux)
-
-An AUR package is maintained at:
-
-<https://aur.archlinux.org/packages/tulip-tasks/>
-
-It packages the AppImage and provides a `.install` script.
-
-**Without an AUR account**, you can build and install this package locally:
-
-```bash
-# From this repository
-cd aur
-makepkg -si
-```
-
-Or use the provided installation script:
+The app can be installed on any Linux distribution with the provided installation script:
 
 ```bash
 bash install-tulip-tasks.sh
 ```
 
-The `PKGBUILD` in this repository (`aur/PKGBUILD`) downloads the AppImage from the GitHub release
-and creates an Arch Linux package. It does not require pushing to the AUR.
+This script:
 
-See the [AUR webseite](https://aur.archlinux.org/packages/tulip-tasks/) for the
-official package and maintainer information.
+1. Downloads the latest AppImage from the GitHub releases
+2. Places it in `~/.local/tulip-tasks/`
+3. Creates a symlink in `~/.local/bin/tulip-tasks`
+4. Creates a desktop entry in `~/.local/share/applications/`
+5. Adds `~/.local/bin` to your PATH (in `.bashrc` or `.zshrc`)
+6. Creates a `.desktop` entry for your application menu
+7. Updates the icon cache
 
-### CI/CD status
+You can also download the AppImage directly from the GitHub releases page and run it:
 
-- **Linux x86_64**: Fully automated on every `git tag v*` — see `.github/workflows/release.yml`
-- **macOS**: Requires local build — the `bundle_dmg.sh` script has compatibility issues with GitHub Actions runners. Run `npm run tauri build` on a macOS machine.
-- **Windows**: Requires local build — NSIS/MSI bundling has compatibility issues on GitHub runners. Run `npm run tauri build` on a Windows machine.
+```bash
+chmod +x tulip-tasks_0.1.5_linux_x86_64.AppImage
+./tulip-tasks_0.1.5_linux_x86_64.AppImage
+```
 
-See `RELEASE.md` for the full version management and release process instructions, including changelog maintenance and asset verification.
+The AppImage runs without installation — just make it executable and launch it.
+All settings and data are stored in `~/.local/share/com.sanchixt.tuliptasks/`.
+
+## Dark mode
+
+Theme settings are available in the app's Settings modal (accessible via the gear icon
+or command palette <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>K</kbd>):
+
+- **Follow system**: The app automatically uses your operating system's light/dark preference
+- **Force light mode**: Always use the neo-brutalist light theme
+- **Force dark mode**: Always use the dark theme
+
+Theme preferences are saved locally and persist across launches.
+
+## Where your data lives
+
+On the desktop the whole workspace is one human-readable JSON file:
+
+```
+~/.local/share/com.sanchixt.tuliptasks/workspace.json
+```
+
+In the browser it falls back to `localStorage`.
+
+**Export** (gear icon or command palette) writes a dated JSON file wherever you
+pick, so you can back the workspace up or move it between machines.
+
+## License
+
+MIT

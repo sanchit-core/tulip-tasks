@@ -8,7 +8,7 @@
   import NeuToggle from "./NeuToggle.svelte";
   import NeuBadge from "./NeuBadge.svelte";
   import ConfirmModal from "./ConfirmModal.svelte";
-  import { THEMES, type Theme } from "$lib/types";
+  import { THEMES, type Theme, type Settings } from "$lib/types";
   import { toast } from "$lib/toasts";
 
   const THEME_LABELS: Record<Theme, string> = {
@@ -16,6 +16,7 @@
     neumorphism: "Neumorphism",
     flat: "Flat design",
     minimal: "Minimal",
+    dark: "Dark mode",
   };
 
   let {
@@ -75,8 +76,8 @@
         value={String(s.notifyHour)}
         onchange={(e) => store.updateSettings({ notifyHour: Number(e.currentTarget.value) })}
       >
-        {#each Array.from({ length: 24 }, (_, i) => i) as h (h)}
-          <option value={String(h)}>{String(h).padStart(2, "0")}:00</option>
+        {#each Array.from({ length: 24 }, (_, hour) => hour) as hour (hour)}
+          <option value={String(hour)}>{String(hour).padStart(2, "0")}:00</option>
         {/each}
       </select>
     </label>
@@ -100,7 +101,7 @@
       onchange={(v) => store.updateSettings({ hideTitlebar: v })}
     />
     <div class="field">
-      <span class="lbl">Theme &amp; design</span>
+      <span class="lbl">Theme & design</span>
       <select
         value={s.theme}
         onchange={(e) => store.updateSettings({ theme: e.currentTarget.value as Theme })}
@@ -110,6 +111,27 @@
         {/each}
       </select>
     </div>
+  </div>
+
+  <div class="sec">
+    <h4>Theme Mode</h4>
+    <NeuToggle
+      checked={s.useSystemTheme}
+      label="Follow system theme (light/dark)"
+      onchange={(v) => store.updateSettings({ useSystemTheme: v })}>
+    </NeuToggle>
+    {#if !s.useSystemTheme}
+      <NeuToggle
+        checked={s.theme === "dark"}
+        label="Force dark mode"
+        onchange={(v) => store.updateSettings({ theme: v ? "dark" : "neo-brutalist" })}>
+      </NeuToggle>
+      <NeuToggle
+        checked={s.theme === "neo-brutalist"}
+        label="Force light mode (neo-brutalist)"
+        onchange={(v) => store.updateSettings({ theme: v ? "neo-brutalist" : "flat" })}>
+      </NeuToggle>
+    {/if}
   </div>
 
   <div class="sec">

@@ -1,6 +1,6 @@
 [package]
 name = "tulip-tasks"
-version = "0.1.0"
+undefined
 description = "Tulip Tasks — neo-brutalist task board with calendar, backlog inbox and recurring tasks"
 authors = ["Sanchit"]
 edition = "2021"

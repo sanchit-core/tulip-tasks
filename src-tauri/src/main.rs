@@ -1,3 +1,3 @@
 fn main() {
-    tulip_kanban_lib::run()
+    tulip_tasks_lib::run()
 }

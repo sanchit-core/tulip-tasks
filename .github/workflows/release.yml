@@ -281,7 +281,7 @@ jobs:
             | macOS | App bundle built locally (.app), DMG requires local execution |
 
             > **Note:** The `bundle_dmg.sh` script used by Tauri for DMG generation has compatibility issues with GitHub Actions macOS runners. DMG files should be built locally using `npm run build` and then `npx tauri bundle --target dmg`. The app bundle (.app) is uploaded as an artifact.
-          args: --bundles none
+          args: --bundles app
 
       - name: Upload app bundle artifact
         if: success()

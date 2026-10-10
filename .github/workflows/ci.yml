@@ -12,8 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check:
-    name: Frontend checks
+  lint-and-test:
+    name: Lint & Test
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -26,17 +26,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: svelte-check
+      - name: Run svelte-check
         run: npm run check
 
       - name: Run tests
-        run: npx vitest run
+        run: npm test
 
       - name: Build frontend
         run: npm run build
 
-  build:
-    name: Build ${{ matrix.label }}
+  build-tauri:
+    name: Build Tauri ${{ matrix.label }}
+    needs: lint-and-test
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -51,6 +52,9 @@ jobs:
           - label: macos (aarch64)
             os: macos-latest
             target: aarch64-apple-darwin
+          - label: macos (x86_64)
+            os: macos-latest
+            target: x86_64-apple-darwin
     steps:
       - uses: actions/checkout@v4
 
@@ -89,13 +93,11 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
-      - name: Build (no installer)
+      - name: Build Tauri (no bundle)
         uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # Bypass the npm "tauri" script: it sources a Nix-only env file that
-          # does not exist on GitHub runners. Uses the local @tauri-apps/cli.
           tauriScript: npx tauri
           args: --no-bundle
           uploadUpdaterJson: false

@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  packages: read
 
 jobs:
   release:
@@ -24,22 +25,36 @@ jobs:
           - label: linux (x86_64)
             os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
+            bundle: deb,rpm,appimage
           - label: windows (x86_64)
             os: windows-latest
             target: x86_64-pc-windows-msvc
+            bundle: msi,nsis
           - label: macos (aarch64)
             os: macos-latest
             target: aarch64-apple-darwin
+            bundle: dmg
           - label: macos (x86_64)
             os: macos-latest
             target: x86_64-apple-darwin
+            bundle: dmg
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -66,7 +81,7 @@ jobs:
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri -> target
-          key: ${{ matrix.target }}
+          key: ${{ matrix.target }}-${{ steps.version.outputs.version }}
 
       - name: Install frontend dependencies
         run: npm ci
@@ -75,28 +90,66 @@ jobs:
         uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Uncomment and configure for code signing:
+          # TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          # TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          # CSC_LINK: ${{ secrets.CSC_LINK }}
+          # CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          # APPLE_ID: ${{ secrets.APPLE_ID }}
+          # APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
-          # Bypass the npm "tauri" script: it sources a Nix-only env file that
-          # does not exist on GitHub runners. Uses the local @tauri-apps/cli.
           tauriScript: npx tauri
-          tagName: ${{ github.event.inputs.tag || github.ref_name }}
-          releaseName: Tulip Tasks ${{ github.event.inputs.tag || github.ref_name }}
+          tagName: ${{ steps.version.outputs.tag }}
+          releaseName: Tulip Tasks ${{ steps.version.outputs.tag }}
           releaseBody: |
-            ## Tulip Tasks ${{ github.event.inputs.tag || github.ref_name }}
+            ## Tulip Tasks ${{ steps.version.outputs.tag }}
 
             Neo-brutalist task board with calendar, backlog inbox and recurring tasks.
 
+            ### Changes
+            ${{ github.event.inputs.tag && format('Built from existing tag {0}', github.event.inputs.tag) || 'See commit history for changes.' }}
+
+            ### Platforms
             | Platform | Installers |
             | --- | --- |
-            | Linux x86_64 | `.deb`, `.rpm` |
+            | Linux x86_64 | `.deb`, `.rpm`, `.AppImage` |
             | Windows x86_64 | `.msi`, `-setup.exe` (NSIS) |
             | macOS (Apple Silicon) | `.dmg` |
             | macOS (Intel) | `.dmg` |
 
-            These artifacts are unsigned, so your OS will show a security warning on first launch.
-          generateReleaseNotes: true
-          prerelease: false
+            ### Verification
+            SHA256 checksums are attached as `checksums.txt`.
+
+            > **Note:** These artifacts are unsigned. Your OS will show a security warning on first launch.
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+          generateReleaseNotes: false
           uploadUpdaterJson: false
-          args: --target ${{ matrix.target }}
+          args: --target ${{ matrix.target }} --bundle ${{ matrix.bundle }}
           releaseAssetNamePattern: >-
-            ${{ matrix.target }}_[name]_[version]_[ext]
+            tulip-tasks_${{ steps.version.outputs.version }}_${{ matrix.target }}.[ext]
+
+      - name: Generate SHA256 checksums
+        if: success()
+        run: |
+          cd src-tauri/target/release/bundle
+          find . -type f \( -name "*.deb" -o -name "*.rpm" -o -name "*.AppImage" -o -name "*.msi" -o -name "*.exe" -o -name "*.dmg" \) -exec sha256sum {} + > checksums.txt
+          cat checksums.txt
+
+      - name: Upload checksums
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checksums-${{ matrix.target }}
+          path: src-tauri/target/release/bundle/checksums.txt
+          retention-days: 90
+
+      - name: Attach checksums to release
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          files: src-tauri/target/release/bundle/checksums.txt
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}

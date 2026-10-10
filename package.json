@@ -11,6 +11,11 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "test": "vitest run",
+    "test:watch": "vitest",
+    "version:patch": "npm version patch --no-git-tag-version && node -e \"const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json')); fs.writeFileSync('src-tauri/Cargo.toml', fs.readFileSync('src-tauri/Cargo.toml', 'utf8').replace(/version = \\\"[^\\\"]+\\\"/, `version = \\\"${p.version}\\\"`)); console.log('Synced to', p.version)\"",
+    "version:minor": "npm version minor --no-git-tag-version && node -e \"const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json')); fs.writeFileSync('src-tauri/Cargo.toml', fs.readFileSync('src-tauri/Cargo.toml', 'utf8').replace(/version = \\\"[^\\\"]+\\\"/, `version = \\\"${p.version}\\\"`)); console.log('Synced to', p.version)\"",
+    "version:major": "npm version major --no-git-tag-version && node -e \"const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json')); fs.writeFileSync('src-tauri/Cargo.toml', fs.readFileSync('src-tauri/Cargo.toml', 'utf8').replace(/version = \\\"[^\\\"]+\\\"/, `version = \\\"${p.version}\\\"`)); console.log('Synced to', p.version)\"",
+    "release": "npm run check && npm test && npm run build && git diff --quiet || (echo 'Working tree dirty - commit changes first' && exit 1)",
     "tauri": ". \"$HOME/.config/tauri-build/env.sh\" && tauri",
     "tauri:build": ". \"$HOME/.config/tauri-build/env.sh\" && tauri build",
     "package:tar": ". \"$HOME/.config/tauri-build/env.sh\" && tauri build --no-bundle && tar -czf \"src-tauri/target/release/bundle/tulip-tasks_${npm_package_version}_linux-x86_64.tar.gz\" -C src-tauri/target/release tulip-tasks"

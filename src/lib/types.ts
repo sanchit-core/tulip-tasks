@@ -66,9 +66,9 @@ export interface Board {
   createdAt: string;
 }
 
-export type Theme = "neo-brutalist" | "neumorphism" | "flat" | "minimal" | "dark";
+export type Theme = "minimal" | "dark";
 
-export const THEMES: readonly Theme[] = ["neo-brutalist", "neumorphism", "flat", "minimal", "dark"];
+export const THEMES: readonly Theme[] = ["minimal", "dark"];
 
 export interface Settings {
   notificationsEnabled: boolean;
@@ -87,7 +87,7 @@ export const DEFAULT_SETTINGS: Settings = {
   notifyHour: 9,
   wipWarnings: true,
   hideTitlebar: false,
-  theme: "neo-brutalist",
+  theme: "minimal",
 };
 
 export interface Workspace {

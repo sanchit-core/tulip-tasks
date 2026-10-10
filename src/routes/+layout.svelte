@@ -11,16 +11,13 @@
 
   $effect(() => {
     if (!ready || typeof document === "undefined") return;
-    // Apply the theme from store settings, defaulting to system
+    // Apply the theme from store settings
     const storedTheme = store.workspace.settings.theme;
     if (storedTheme === "dark") {
       document.documentElement.dataset.theme = "dark";
-    } else if (storedTheme === "neo-brutalist") {
-      document.documentElement.dataset.theme = "neo-brutalist";
     } else {
-      // Default to system preference for other themes
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      document.documentElement.dataset.theme = prefersDark ? "dark" : storedTheme;
+      // Default to minimal
+      document.documentElement.dataset.theme = "minimal";
     }
   });
 
@@ -32,11 +29,8 @@
         const storedTheme = store.workspace.settings.theme;
         if (storedTheme === "dark") {
           document.documentElement.dataset.theme = "dark";
-        } else if (storedTheme === "neo-brutalist") {
-          document.documentElement.dataset.theme = "neo-brutalist";
         } else {
-          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          document.documentElement.dataset.theme = prefersDark ? "dark" : storedTheme;
+          document.documentElement.dataset.theme = "minimal";
         }
       }
       if (store.workspace.settings.notificationsEnabled && isDesktop()) {

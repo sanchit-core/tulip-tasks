@@ -12,10 +12,7 @@
   import { toast } from "$lib/toasts";
 
   const THEME_LABELS: Record<Theme, string> = {
-    "neo-brutalist": "Neo-brutalist (default)",
-    neumorphism: "Neumorphism",
-    flat: "Flat design",
-    minimal: "Minimal",
+    minimal: "Minimal (default)",
     dark: "Dark mode",
   };
 
@@ -116,17 +113,10 @@
   <div class="sec">
     <h4>Appearance</h4>
     <NeuToggle
-      checked={s.theme !== "neo-brutalist"}
-      label="Force dark mode"
-      onchange={(v) => store.updateSettings({ theme: v ? "dark" : "neo-brutalist" })}>
+      checked={s.theme === "dark"}
+      label="Dark mode"
+      onchange={(v) => store.updateSettings({ theme: v ? "dark" : "minimal" })}>
     </NeuToggle>
-    {#if s.theme !== "neo-brutalist"}
-      <NeuToggle
-        checked={s.theme !== "flat"}
-        label="Force flat theme"
-        onchange={(v) => store.updateSettings({ theme: v ? "flat" : "neo-brutalist" })}>
-      </NeuToggle>
-    {/if}
   </div>
 
   <div class="sec">

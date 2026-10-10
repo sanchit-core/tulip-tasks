@@ -4,7 +4,7 @@ import { coerceWorkspace, parseWorkspace, toWorkspaceFile } from "$lib/persist";
 describe("persist", () => {
   it("toWorkspaceFile wraps the workspace", () => {
     const ws = { version: 1, boards: [], columns: [], tasks: [], settings: {
-      notificationsEnabled: true, notifyHour: 9, wipWarnings: true, hideTitlebar: false, theme: "neo-brutalist"
+      notificationsEnabled: true, notifyHour: 9, wipWarnings: true, hideTitlebar: false, theme: "minimal"
     } } as any;
     const f = toWorkspaceFile(ws);
     expect(f.app).toBe("Tulip Tasks");
@@ -18,7 +18,7 @@ describe("persist", () => {
     expect(ws!.tasks[0].tags).toEqual([]);
     expect(ws!.tasks[0].subtasks).toEqual([]);
     expect(ws!.tasks[0].title).toBe("Untitled task");
-    expect(ws!.settings.theme).toBe("neo-brutalist");
+    expect(ws!.settings.theme).toBe("minimal");
   });
 
   it("parseWorkspace rejects invalid JSON", () => {

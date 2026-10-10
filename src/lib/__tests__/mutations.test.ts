@@ -238,8 +238,8 @@ describe("tags and settings", () => {
 
   it("updateSettings merges", () => {
     const ws = mkWorkspace();
-    updateSettings(ws, { theme: "flat", notifyHour: 7 });
-    expect(ws.settings.theme).toBe("flat");
+    updateSettings(ws, { theme: "dark", notifyHour: 7 });
+    expect(ws.settings.theme).toBe("dark");
     expect(ws.settings.notifyHour).toBe(7);
     expect(ws.settings.notificationsEnabled).toBe(true);
   });

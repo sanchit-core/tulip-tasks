@@ -1,6 +1,6 @@
-# Tulip Kanban
+# Tulip Tasks
 
-A neo-brutalist kanban board with a calendar, a backlog inbox and recurring tasks.
+A neo-brutalist task board with a calendar, a backlog inbox and recurring tasks.
 SvelteKit + Tauri 2 desktop app, local-first, no server required.
 
 ![svelte](https://img.shields.io/badge/svelte-5-ff4d6d) ![tauri](https://img.shields.io/badge/tauri-2-7c6cf0)
@@ -90,7 +90,7 @@ The first `tauri dev` links the whole GTK/WebKit stack and takes a while
 On the desktop the whole workspace is one human-readable JSON file:
 
 ```
-~/.local/share/com.sanchixt.tulipkanban/workspace.json
+~/.local/share/com.sanchixt.tuliptasks/workspace.json
 ```
 
 In the browser it falls back to `localStorage`. Writes are debounced 250 ms and

@@ -12,10 +12,10 @@
 
   let title = $derived(
     saveState === "saving"
-      ? "Tulip Kanban — saving…"
+      ? "Tulip Tasks — saving…"
       : saveState === "error"
-        ? "Tulip Kanban — save failed"
-        : "Tulip Kanban",
+        ? "Tulip Tasks — save failed"
+        : "Tulip Tasks",
   );
 </script>
 

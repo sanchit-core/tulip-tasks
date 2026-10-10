@@ -80,11 +80,11 @@ jobs:
           # does not exist on GitHub runners. Uses the local @tauri-apps/cli.
           tauriScript: npx tauri
           tagName: ${{ github.event.inputs.tag || github.ref_name }}
-          releaseName: Tulip Kanban ${{ github.event.inputs.tag || github.ref_name }}
+          releaseName: Tulip Tasks ${{ github.event.inputs.tag || github.ref_name }}
           releaseBody: |
-            ## Tulip Kanban ${{ github.event.inputs.tag || github.ref_name }}
+            ## Tulip Tasks ${{ github.event.inputs.tag || github.ref_name }}
 
-            Neo-brutalist kanban board with calendar, backlog inbox and recurring tasks.
+            Neo-brutalist task board with calendar, backlog inbox and recurring tasks.
 
             | Platform | Installers |
             | --- | --- |

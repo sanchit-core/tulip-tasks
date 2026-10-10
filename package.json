@@ -1,7 +1,7 @@
 {
-  "name": "tulip-kanban",
+  "name": "tulip-tasks",
   "version": "0.1.0",
-  "description": "Tulip Kanban — a neo-brutalist kanban board with calendar, backlog inbox and recurring tasks",
+  "description": "Tulip Tasks — a neo-brutalist task board with calendar, backlog inbox and recurring tasks",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
@@ -13,7 +13,7 @@
     "test": "vitest run",
     "tauri": ". \"$HOME/.config/tauri-build/env.sh\" && tauri",
     "tauri:build": ". \"$HOME/.config/tauri-build/env.sh\" && tauri build",
-    "package:tar": ". \"$HOME/.config/tauri-build/env.sh\" && tauri build --no-bundle && tar -czf \"src-tauri/target/release/bundle/tulip-kanban_${npm_package_version}_linux-x86_64.tar.gz\" -C src-tauri/target/release tulip-kanban"
+    "package:tar": ". \"$HOME/.config/tauri-build/env.sh\" && tauri build --no-bundle && tar -czf \"src-tauri/target/release/bundle/tulip-tasks_${npm_package_version}_linux-x86_64.tar.gz\" -C src-tauri/target/release tulip-tasks"
   },
   "license": "MIT",
   "dependencies": {

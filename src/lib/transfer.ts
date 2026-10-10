@@ -9,7 +9,7 @@ export async function exportToFile(text: string): Promise<string | null> {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `tulip-kanban-${stamp}.json`;
+    a.download = `tulip-tasks-${stamp}.json`;
     a.click();
     URL.revokeObjectURL(url);
     return a.download;
@@ -18,8 +18,8 @@ export async function exportToFile(text: string): Promise<string | null> {
     const { save } = await import("@tauri-apps/plugin-dialog");
     const { writeTextFile } = await import("@tauri-apps/plugin-fs");
     const path = await save({
-      title: "Export Tulip Kanban workspace",
-      defaultPath: `tulip-kanban-${stamp}.json`,
+      title: "Export Tulip Tasks workspace",
+      defaultPath: `tulip-tasks-${stamp}.json`,
       filters: [{ name: "JSON", extensions: ["json"] }],
     });
     if (!path) return null;
@@ -49,7 +49,7 @@ export async function importFromFile(): Promise<string | null> {
     const { open } = await import("@tauri-apps/plugin-dialog");
     const { readTextFile } = await import("@tauri-apps/plugin-fs");
     const picked = await open({
-      title: "Import Tulip Kanban workspace",
+      title: "Import Tulip Tasks workspace",
       multiple: false,
       filters: [{ name: "JSON", extensions: ["json"] }],
     });

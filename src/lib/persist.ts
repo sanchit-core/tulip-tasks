@@ -9,7 +9,7 @@ import {
 } from "./types";
 
 export const WORKSPACE_FILE = "workspace.json";
-const LS_KEY = "tulip-kanban.workspace.v1";
+const LS_KEY = "tulip-tasks.workspace.v1";
 
 function isTauri(): boolean {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -128,7 +128,7 @@ export function coerceWorkspace(data: unknown): Workspace | null {
 
 export function toWorkspaceFile(ws: Workspace): WorkspaceFile {
   return {
-    app: "Tulip Kanban",
+    app: "Tulip Tasks",
     exportedAt: new Date().toISOString(),
     workspace: ws,
   };

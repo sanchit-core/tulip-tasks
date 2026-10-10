@@ -56,7 +56,7 @@ export async function checkDue(tasks: Task[]): Promise<number> {
     announced.add(t.id);
 
     await send(
-      overdue ? "Overdue in Tulip Kanban" : "Due today in Tulip Kanban",
+      overdue ? "Overdue in Tulip Tasks" : "Due today in Tulip Tasks",
       overdue ? `${t.title} — was due ${t.due}` : t.title,
     );
     sent += 1;
@@ -85,7 +85,7 @@ export async function maybeDailyDigest(dueToday: Task[], overdue: Task[], hour: 
   const parts: string[] = [];
   if (dueToday.length) parts.push(`${dueToday.length} due today`);
   if (overdue.length) parts.push(`${overdue.length} overdue`);
-  await send("Tulip Kanban — daily digest", parts.join(" · "));
+  await send("Tulip Tasks — daily digest", parts.join(" · "));
 }
 
 /** Start the hourly sweep. Safe to call more than once. */

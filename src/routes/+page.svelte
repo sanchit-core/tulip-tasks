@@ -188,7 +188,7 @@
         toast("Workspace imported", "success");
         settingsOpen = false;
       } else {
-        toast("That file is not a Tulip Kanban workspace", "error", 5000);
+        toast("That file is not a Tulip Tasks workspace", "error", 5000);
       }
     } catch {
       toast("Could not parse that JSON file", "error", 5000);

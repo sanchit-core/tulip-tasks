@@ -7,7 +7,7 @@ describe("persist", () => {
       notificationsEnabled: true, notifyHour: 9, wipWarnings: true, hideTitlebar: false, theme: "neo-brutalist"
     } } as any;
     const f = toWorkspaceFile(ws);
-    expect(f.app).toBe("Tulip Kanban");
+    expect(f.app).toBe("Tulip Tasks");
     expect(f.workspace).toBe(ws);
   });
 

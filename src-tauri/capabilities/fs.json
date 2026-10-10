@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "fs-capability",
-  "description": "Read and write the Tulip Kanban workspace JSON in the app data directory, plus user-picked export/import files",
+  "description": "Read and write the Tulip Tasks workspace JSON in the app data directory, plus user-picked export/import files",
   "windows": ["main"],
   "permissions": [
     "fs:allow-appdata-read-recursive",

@@ -105,7 +105,7 @@
 <aside class="side">
   <div class="brand">
     <span class="logo"><Icon name="tulip" size={18} fill /></span>
-    <span class="truncate">Tulip Kanban</span>
+    <span class="truncate">Tulip Tasks</span>
   </div>
 
   <nav>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Tulip Tasks logo</title>
+  <desc id="desc">A pink tulip above a three-column kanban board on a transparent background.</desc>
+  <defs>
+    <linearGradient id="petal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff9dc8"/>
+      <stop offset="1" stop-color="#f04491"/>
+    </linearGradient>
+    <linearGradient id="centerPetal" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#f84a96"/>
+      <stop offset="1" stop-color="#d92c79"/>
+    </linearGradient>
+    <linearGradient id="stem" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#67e3b0"/>
+      <stop offset="1" stop-color="#24b987"/>
+    </linearGradient>
+    <linearGradient id="board" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#34384d"/>
+      <stop offset="1" stop-color="#222536"/>
+    </linearGradient>
+  </defs>
+  <!-- Kanban columns -->
+  <g>
+    <rect x="344" y="470" width="162" height="258" rx="28" fill="url(#board)"/>
+    <rect x="519" y="492" width="162" height="236" rx="28" fill="url(#board)"/>
+    <rect x="694" y="470" width="162" height="258" rx="28" fill="url(#board)"/>
+    <rect x="363" y="509" width="124" height="53" rx="12" fill="#c77bf3"/>
+    <rect x="363" y="579" width="124" height="53" rx="12" fill="#9ba6c0"/>
+    <rect x="538" y="538" width="124" height="53" rx="12" fill="#f178b6"/>
+    <rect x="538" y="608" width="124" height="53" rx="12" fill="#9ba6c0"/>
+    <rect x="713" y="513" width="124" height="53" rx="12" fill="#ffd17d"/>
+    <rect x="713" y="583" width="124" height="53" rx="12" fill="#9ba6c0"/>
+  </g>
+  <!-- Tulip stem and leaves -->
+  <rect x="588" y="380" width="24" height="138" rx="9" fill="url(#stem)"/>
+  <path d="M588 474 C548 472 516 449 489 408 C533 403 567 421 588 457 Z" fill="#39c78f"/>
+  <path d="M612 474 C652 472 684 449 711 408 C667 403 633 421 612 457 Z" fill="#39c78f"/>
+  <!-- Tulip petals -->
+  <path d="M600 411 C548 411 493 374 493 307 L493 257 C538 258 580 286 600 336 C620 286 662 258 707 257 L707 307 C707 374 652 411 600 411 Z" fill="url(#petal)"/>
+  <path d="M600 411 L600 222 C565 245 542 274 535 311 C527 355 554 392 600 411 Z" fill="url(#centerPetal)" opacity=".98"/>
+  <path d="M600 411 L600 222 C635 245 658 274 665 311 C673 355 646 392 600 411 Z" fill="#ec3d89" opacity=".78"/>
+</svg>

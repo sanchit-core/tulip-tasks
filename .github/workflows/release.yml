@@ -183,7 +183,7 @@ jobs:
             | Platform | Installers |
             | --- | --- |
             | Linux (x86_64) | `.deb`, `.rpm`, `.AppImage` |
-            | Windows (x86_64) | `.msi`, `-setup.exe` (NSIS) |
+            | Windows (x86_64) | `.msi` (WiX) |
 
             ### Verification
             SHA256 checksums are attached as `checksums.txt`.
@@ -192,7 +192,7 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
           generateReleaseNotes: false
           uploadUpdaterJson: false
-          args: --target x86_64-pc-windows-msvc --bundles msi,nsis
+          args: --target x86_64-pc-windows-msvc --bundles msi
           releaseAssetNamePattern: >-
             tulip-tasks_${{ steps.version.outputs.version }}_windows_x86_64.[ext]
 

@@ -88,9 +88,8 @@ jobs:
             | Platform | Installers |
             | --- | --- |
             | **Linux (x86_64)** | `.deb` (Debian/Ubuntu), `.rpm` (Fedora/RHEL), `.AppImage` (universal) |
-            | macOS (Apple Silicon) | `.dmg` |
-            | macOS (Intel) | `.dmg` |
-            | Windows (x86_64) | `.msi`, `-setup.exe` (NSIS) |
+            | macOS | .dmg (build locally) |
+            | Windows | .msi, .exe (NSIS) |
 
             ### Verification
             SHA256 checksums are attached as `checksums.txt`.
@@ -127,198 +126,10 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
 
   # ============================================================
-  # MACOS BUILDS (run after Linux)
-  # ============================================================
-  release-macos-aarch64:
-    name: macOS Apple Silicon (DMG)
-    needs: [release-linux-x86_64]
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Extract version from tag
-        id: version
-        run: |
-          TAG="${{ github.event.inputs.tag || github.ref_name }}"
-          VERSION="${TAG#v}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-darwin
-
-      - uses: swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri -> target
-          key: macos-aarch64-${{ steps.version.outputs.version }}
-
-      - name: Install frontend dependencies
-        run: npm ci
-
-      - name: Build macOS Apple Silicon installer (DMG)
-        uses: tauri-apps/tauri-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tauriScript: npx tauri
-          tagName: ${{ steps.version.outputs.tag }}
-          releaseName: Tulip Tasks ${{ steps.version.outputs.tag }}
-          releaseBody: |
-            ## Tulip Tasks ${{ steps.version.outputs.tag }}
-
-            Neo-brutalist task board with calendar, backlog inbox and recurring tasks.
-
-            ### Changes
-            ${{ github.event.inputs.tag && format('Built from existing tag {0}', github.event.inputs.tag) || 'See commit history for changes.' }}
-
-            ### Platforms
-            | Platform | Installers |
-            | --- | --- |
-            | **Linux (x86_64)** | `.deb` (Debian/Ubuntu), `.rpm` (Fedora/RHEL), `.AppImage` (universal) |
-            | **macOS (Apple Silicon)** | `.dmg` |
-            | macOS (Intel) | `.dmg` |
-            | Windows (x86_64) | `.msi`, `-setup.exe` (NSIS) |
-
-            ### Verification
-            SHA256 checksums are attached as `checksums.txt`.
-
-            > **Note:** These artifacts are unsigned. Your OS will show a security warning on first launch.
-          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
-          generateReleaseNotes: false
-          uploadUpdaterJson: false
-          args: --target aarch64-apple-darwin --bundles dmg
-          releaseAssetNamePattern: >-
-            tulip-tasks_${{ steps.version.outputs.version }}_macos_aarch64.[ext]
-
-      - name: Generate SHA256 checksums (macOS aarch64)
-        if: success()
-        run: |
-          cd src-tauri/target/aarch64-apple-darwin/release/bundle
-          find . -type f -name "*.dmg" -exec sha256sum {} + > checksums-macos-aarch64.txt
-          cat checksums-macos-aarch64.txt
-
-      - name: Upload checksums artifact (macOS aarch64)
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: checksums-macos-aarch64
-          path: src-tauri/target/aarch64-apple-darwin/release/bundle/checksums-macos-aarch64.txt
-          retention-days: 90
-
-      - name: Attach checksums to release (macOS aarch64)
-        if: success()
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          files: src-tauri/target/aarch64-apple-darwin/release/bundle/checksums-macos-aarch64.txt
-          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
-
-  release-macos-x86_64:
-    name: macOS Intel (DMG)
-    needs: [release-linux-x86_64]
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Extract version from tag
-        id: version
-        run: |
-          TAG="${{ github.event.inputs.tag || github.ref_name }}"
-          VERSION="${TAG#v}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-apple-darwin
-
-      - uses: swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri -> target
-          key: macos-x86_64-${{ steps.version.outputs.version }}
-
-      - name: Install frontend dependencies
-        run: npm ci
-
-      - name: Build macOS Intel installer (DMG)
-        uses: tauri-apps/tauri-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tauriScript: npx tauri
-          tagName: ${{ steps.version.outputs.tag }}
-          releaseName: Tulip Tasks ${{ steps.version.outputs.tag }}
-          releaseBody: |
-            ## Tulip Tasks ${{ steps.version.outputs.tag }}
-
-            Neo-brutalist task board with calendar, backlog inbox and recurring tasks.
-
-            ### Changes
-            ${{ github.event.inputs.tag && format('Built from existing tag {0}', github.event.inputs.tag) || 'See commit history for changes.' }}
-
-            ### Platforms
-            | Platform | Installers |
-            | --- | --- |
-            | Linux (x86_64) | `.deb`, `.rpm`, `.AppImage` |
-            | macOS (Apple Silicon) | `.dmg` |
-            | **macOS (Intel)** | `.dmg` |
-            | Windows (x86_64) | `.msi`, `-setup.exe` (NSIS) |
-
-            ### Verification
-            SHA256 checksums are attached as `checksums.txt`.
-
-            > **Note:** These artifacts are unsigned. Your OS will show a security warning on first launch.
-          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
-          generateReleaseNotes: false
-          uploadUpdaterJson: false
-          args: --target x86_64-apple-darwin --bundles dmg
-          releaseAssetNamePattern: >-
-            tulip-tasks_${{ steps.version.outputs.version }}_macos_x86_64.[ext]
-
-      - name: Generate SHA256 checksums (macOS x86_64)
-        if: success()
-        run: |
-          cd src-tauri/target/x86_64-apple-darwin/release/bundle
-          find . -type f -name "*.dmg" -exec sha256sum {} + > checksums-macos-x86_64.txt
-          cat checksums-macos-x86_64.txt
-
-      - name: Upload checksums artifact (macOS x86_64)
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: checksums-macos-x86_64
-          path: src-tauri/target/x86_64-apple-darwin/release/bundle/checksums-macos-x86_64.txt
-          retention-days: 90
-
-      - name: Attach checksums to release (macOS x86_64)
-        if: success()
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          files: src-tauri/target/x86_64-apple-darwin/release/bundle/checksums-macos-x86_64.txt
-          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
-
-  # ============================================================
-  # WINDOWS BUILD (run last)
+  # WINDOWS BUILD (run after Linux)
   # ============================================================
   release-windows-x86_64:
     name: Windows x86_64 (MSI/NSIS)
-    needs: [release-macos-aarch64, release-macos-x86_64]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -370,8 +181,7 @@ jobs:
             | Platform | Installers |
             | --- | --- |
             | Linux (x86_64) | `.deb`, `.rpm`, `.AppImage` |
-            | macOS (Apple Silicon) | `.dmg` |
-            | macOS (Intel) | `.dmg` |
+            | macOS | .dmg (build locally) |
             | **Windows (x86_64)** | `.msi`, `-setup.exe` (NSIS) |
 
             ### Verification
@@ -407,3 +217,72 @@ jobs:
           tag_name: ${{ steps.version.outputs.tag }}
           files: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/checksums-windows-x86_64.txt
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+
+  # ============================================================
+  # MACOS BUILD (informational - DMG requires local execution)
+  # ============================================================
+  release-macos-informational:
+    name: macOS (DMG - build locally)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+          key: macos-x86_64-${{ steps.version.outputs.version }}
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build macOS app bundle (no DMG)
+        uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tauriScript: npx tauri
+          tagName: ${{ steps.version.outputs.tag }}
+          releaseName: Tulip Tasks ${{ steps.version.outputs.tag }}
+          releaseBody: |
+            ## Tulip Tasks ${{ steps.version.outputs.tag }}
+
+            Neo-brutalist task board with calendar, backlog inbox and recurring tasks.
+
+            ### Changes
+            ${{ github.event.inputs.tag && format('Built from existing tag {0}', github.event.inputs.tag) || 'See commit history for changes.' }}
+
+            ### Platforms
+            | Platform | Installers |
+            | --- | --- |
+            | Linux (x86_64) | `.deb`, `.rpm`, `.AppImage` |
+            | Windows (x86_64) | `.msi`, `-setup.exe` (NSIS) |
+            | macOS | App bundle built locally (.app), DMG requires local execution |
+
+            > **Note:** The `bundle_dmg.sh` script used by Tauri for DMG generation has compatibility issues with GitHub Actions macOS runners. DMG files should be built locally using `npm run build` and then `npx tauri bundle --target dmg`.
+
+      - name: Upload app bundle artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-app-bundle
+          path: src-tauri/target/x86_64-apple-darwin/release/bundle/macos/Tulip Tasks.app
+          retention-days: 90

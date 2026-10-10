@@ -33,12 +33,6 @@ async function send(title: string, body: string): Promise<void> {
   }
 }
 
-/** Fire a one-off notification if the OS allows it. */
-export async function notify(title: string, body: string): Promise<void> {
-  if (!isDesktop()) return;
-  await send(title, body);
-}
-
 /**
  * Announce tasks coming due today and anything overdue.
  *
@@ -115,9 +109,4 @@ export function bootNotifier(getTasks: () => Task[], getHour: () => number): voi
     },
     Math.round(DAY_MS / 24),
   );
-}
-
-export function stopNotifier(): void {
-  if (timer) clearInterval(timer);
-  timer = null;
 }

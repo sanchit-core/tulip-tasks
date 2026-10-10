@@ -29,6 +29,9 @@ jobs:
       - name: svelte-check
         run: npm run check
 
+      - name: Run tests
+        run: npx vitest run
+
       - name: Build frontend
         run: npm run build
 

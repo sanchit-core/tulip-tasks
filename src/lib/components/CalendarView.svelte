@@ -61,6 +61,10 @@
     store.visibleTasks().filter((t) => t.due === null && !t.completedAt).slice(0, 40),
   );
 
+  let overdue = $derived(
+    store.overdueTasks().slice(0, 40),
+  );
+
   const PRIO_TONE: Record<Priority, "urgent" | "high" | "medium" | "low"> = {
     urgent: "urgent",
     high: "high",
@@ -190,6 +194,53 @@
       </div>
     {/each}
   </div>
+
+  {#if overdue.length}
+    <section class="unscheduled overdue-section">
+      <h3>
+        <Icon name="alert-triangle" size={16} strokeWidth={2.4} />
+        Overdue
+        <span class="muted-3 small">({overdue.length})</span>
+      </h3>
+      <p class="tiny muted">Drag a card to today or a future day to reschedule.</p>
+      <div class="rows">
+        {#each overdue as task (task.id)}
+          <div class="urow" class:dragging={dnd.isDragging(task.id)} data-card>
+            <button
+              class="grip"
+              type="button"
+              title="Drag onto a day to reschedule"
+              aria-label="Drag {task.title} onto a calendar day"
+              onpointerdown={(e) => dnd.start(task, e)}
+            >
+              <Icon name="grip" size={16} strokeWidth={2.8} />
+            </button>
+            <button class="dot-btn" type="button" title="Mark done" onclick={() => store.toggleComplete(task.id)}>
+              <Icon name="circle" size={17} strokeWidth={2.3} />
+            </button>
+            <button class="grow utitle truncate" type="button" onclick={() => onopen(task.id)}>
+              {task.title}
+            </button>
+            <NeuBadge tone={PRIO_TONE[task.priority]} size="sm">{task.priority}</NeuBadge>
+            <label class="date">
+              <span class="tiny muted">Due</span>
+              <input
+                type="date"
+                value={task.due ?? ""}
+                onchange={(e) => {
+                  const v = e.currentTarget.value;
+                  store.updateTask(task.id, { due: v || null });
+                }}
+              />
+            </label>
+            <NeuButton size="sm" variant="ghost" title="Clear due date" onclick={() => unschedule(task.id)}>
+              <Icon name="x" size={14} strokeWidth={2.6} />
+            </NeuButton>
+          </div>
+        {/each}
+      </div>
+    </section>
+  {/if}
 
   {#if unscheduled.length}
     <section class="unscheduled">

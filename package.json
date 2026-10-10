@@ -10,6 +10,7 @@
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "test": "vitest run",
     "tauri": ". \"$HOME/.config/tauri-build/env.sh\" && tauri",
     "tauri:build": ". \"$HOME/.config/tauri-build/env.sh\" && tauri build",
     "package:tar": ". \"$HOME/.config/tauri-build/env.sh\" && tauri build --no-bundle && tar -czf \"src-tauri/target/release/bundle/tulip-kanban_${npm_package_version}_linux-x86_64.tar.gz\" -C src-tauri/target/release tulip-kanban"
@@ -27,9 +28,11 @@
     "@sveltejs/kit": "^2.65.1",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tauri-apps/cli": "^2",
+    "node-localstorage": "^3.0.5",
     "svelte": "^5.56.3",
     "svelte-check": "^4.6.0",
     "typescript": "~6.0.3",
-    "vite": "^8.0.16"
+    "vite": "^8.0.16",
+    "vitest": "^5.0.3"
   }
 }

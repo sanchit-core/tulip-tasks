@@ -51,6 +51,19 @@
     contextMenu.open = false;
   }
 
+  function taskContextMenu(e: MouseEvent, task: any) {
+    showContextMenu(e, [
+      { label: "Open", icon: "external-link", action: () => store.openTask(task.id) },
+      { label: "Edit", icon: "edit", action: () => { store.openTask(task.id); } },
+      { label: "Duplicate", icon: "copy", action: () => store.duplicateTask(task.id) },
+      { label: "", action: () => {}, separator: true },
+      { label: "Mark done", icon: "check-circle", action: () => store.completeTask(task.id), disabled: !!task.completedAt },
+      { label: "Reopen", icon: "rotate-ccw", action: () => store.reopenTask(task.id), disabled: !task.completedAt },
+      { label: "", action: () => {}, separator: true },
+      { label: "Delete", icon: "trash", action: () => store.deleteTask(task.id), danger: true },
+    ]);
+  }
+
   // ---- drag & drop wiring (window-level so it works across views) ------
   function onPointerMove(e: PointerEvent) {
     dnd.move(e);
@@ -285,7 +298,7 @@
 
       <div class="view">
         {#if store.view === "board"}
-          <BoardView onopen={(id) => store.openTask(id)} />
+          <BoardView onopen={(id) => store.openTask(id)} oncontextmenu={taskContextMenu} />
         {:else if store.view === "calendar"}
           <CalendarView onopen={(id) => store.openTask(id)} />
         {:else}

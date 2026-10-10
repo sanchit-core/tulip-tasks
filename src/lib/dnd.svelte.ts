@@ -15,11 +15,6 @@ export interface DragState {
   ghostHTML: string | null;
 }
 
-export type DropTarget =
-  | { kind: "column"; columnId: string }
-  | { kind: "backlog" }
-  | { kind: "date"; iso: string };
-
 export interface DropResult {
   taskId: string;
   columnId: string | null;
@@ -174,20 +169,5 @@ export class DragController {
   }
 }
 
-/** Insertion index implied by pointer position inside a card list. */
-export function indexFromPointer(list: HTMLElement | null, pointerY: number): number {
-  if (!list) return 0;
-  const cards = [...list.querySelectorAll<HTMLElement>("[data-card]")];
-  for (let i = 0; i < cards.length; i++) {
-    const r = cards[i].getBoundingClientRect();
-    if (pointerY < r.top + r.height / 2) return i;
-  }
-  return cards.length;
-}
-
 /** Shared controller so every drop zone and card talks to the same drag. */
 export const dnd = new DragController();
-
-export function isDoneColumn(col: Column | null): boolean {
-  return col?.done === true;
-}

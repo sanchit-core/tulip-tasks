@@ -2,7 +2,7 @@
   import "../app.css";
   import { onMount } from "svelte";
   import { store } from "$lib/store.svelte";
-  import { bootNotifier, isDesktop, notify } from "$lib/notify";
+  import { bootNotifier, isDesktop } from "$lib/notify";
   import Toast from "$lib/components/Toast.svelte";
 
   let { children }: { children?: import("svelte").Snippet } = $props();

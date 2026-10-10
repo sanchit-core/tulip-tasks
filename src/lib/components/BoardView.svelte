@@ -206,6 +206,7 @@
                 onopen={onopen}
                 oncomplete={(id) => store.toggleComplete(id)}
                 ondragstart={(e) => dnd.start(task, e)}
+                oncontextmenu={oncontextmenu}
               />
             </div>
           {/each}

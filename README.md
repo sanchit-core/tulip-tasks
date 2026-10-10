@@ -144,3 +144,37 @@ src-tauri/                Rust shell: opener, notification, dialog, fs plugins
 | `npm run build` | Production frontend build |
 | `npm run tauri dev` | Desktop app with hot reload |
 | `npm run tauri build` | Packaged desktop binary |
+
+## Building for different platforms
+
+The Tauri CLI can build for all three platforms from a development machine:
+
+| Platform | Command | Output |
+| --- | --- | --- |
+| **Linux x86_64** | `npm run tauri build` | `deb`, `rpm`, `AppImage` + `checksums.txt` |
+| **macOS** | `npm run tauri build` | `Tulip Tasks.app` bundle, `*.dmg` (requires local execution on macOS) |
+| **Windows** | `npm run tauri build` | `*.msi` (WiX), `*.exe` (NSIS) |
+
+### AUR (Arch Linux)
+
+An AUR package is maintained at:
+
+<https://aur.archlinux.org/packages/tulip-tasks/>
+
+It packages the AppImage and provides a `.install` script. To build it locally:
+
+```bash
+git clone https://aur.archlinux.org/tulip-tasks.git
+cd tulip-tasks
+makepkg -si
+```
+
+The PKGBUILD downloads the latest AppImage from the GitHub releases and creates an Arch package. The `PKGBUILD` in this repository (`aur/PKGBUILD`) can be used as a reference or started point. See the [AUR webseite](https://aur.archlinux.org/packages/tulip-tasks/) for the official package build script and maintainer information.
+
+### CI/CD status
+
+- **Linux x86_64**: Fully automated on every `git tag v*` — see `.github/workflows/release.yml`
+- **macOS**: Requires local build — the `bundle_dmg.sh` script has compatibility issues with GitHub Actions runners. Run `npm run tauri build` on a macOS machine.
+- **Windows**: Requires local build — NSIS/MSI bundling has compatibility issues on GitHub runners. Run `npm run tauri build` on a Windows machine.
+
+See `RELEASE.md` for the full version management and release process instructions, including changelog maintenance and asset verification.

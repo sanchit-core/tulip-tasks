@@ -106,7 +106,7 @@ jobs:
       - name: Generate SHA256 checksums (Linux x86_64)
         if: success()
         run: |
-          cd src-tauri/target/release/bundle
+          cd src-tauri/target/x86_64-unknown-linux-gnu/release/bundle
           find . -type f \( -name "*.deb" -o -name "*.rpm" -o -name "*.AppImage" \) -exec sha256sum {} + > checksums-linux-x86_64.txt
           cat checksums-linux-x86_64.txt
 
@@ -115,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: checksums-linux-x86_64
-          path: src-tauri/target/release/bundle/checksums-linux-x86_64.txt
+          path: src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/checksums-linux-x86_64.txt
           retention-days: 90
 
       - name: Attach checksums to release (Linux x86_64)
@@ -123,7 +123,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          files: src-tauri/target/release/bundle/checksums-linux-x86_64.txt
+          files: src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/checksums-linux-x86_64.txt
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
 
   # ============================================================
@@ -201,7 +201,7 @@ jobs:
       - name: Generate SHA256 checksums (macOS aarch64)
         if: success()
         run: |
-          cd src-tauri/target/release/bundle
+          cd src-tauri/target/aarch64-apple-darwin/release/bundle
           find . -type f -name "*.dmg" -exec sha256sum {} + > checksums-macos-aarch64.txt
           cat checksums-macos-aarch64.txt
 
@@ -210,7 +210,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: checksums-macos-aarch64
-          path: src-tauri/target/release/bundle/checksums-macos-aarch64.txt
+          path: src-tauri/target/aarch64-apple-darwin/release/bundle/checksums-macos-aarch64.txt
           retention-days: 90
 
       - name: Attach checksums to release (macOS aarch64)
@@ -218,7 +218,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          files: src-tauri/target/release/bundle/checksums-macos-aarch64.txt
+          files: src-tauri/target/aarch64-apple-darwin/release/bundle/checksums-macos-aarch64.txt
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
 
   release-macos-x86_64:
@@ -293,7 +293,7 @@ jobs:
       - name: Generate SHA256 checksums (macOS x86_64)
         if: success()
         run: |
-          cd src-tauri/target/release/bundle
+          cd src-tauri/target/x86_64-apple-darwin/release/bundle
           find . -type f -name "*.dmg" -exec sha256sum {} + > checksums-macos-x86_64.txt
           cat checksums-macos-x86_64.txt
 
@@ -302,7 +302,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: checksums-macos-x86_64
-          path: src-tauri/target/release/bundle/checksums-macos-x86_64.txt
+          path: src-tauri/target/x86_64-apple-darwin/release/bundle/checksums-macos-x86_64.txt
           retention-days: 90
 
       - name: Attach checksums to release (macOS x86_64)
@@ -310,7 +310,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          files: src-tauri/target/release/bundle/checksums-macos-x86_64.txt
+          files: src-tauri/target/x86_64-apple-darwin/release/bundle/checksums-macos-x86_64.txt
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
 
   # ============================================================
@@ -388,7 +388,7 @@ jobs:
       - name: Generate SHA256 checksums (Windows x86_64)
         if: success()
         run: |
-          cd src-tauri/target/release/bundle
+          cd src-tauri/target/x86_64-pc-windows-msvc/release/bundle
           find . -type f \( -name "*.msi" -o -name "*.exe" \) -exec sha256sum {} + > checksums-windows-x86_64.txt
           cat checksums-windows-x86_64.txt
 
@@ -397,7 +397,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: checksums-windows-x86_64
-          path: src-tauri/target/release/bundle/checksums-windows-x86_64.txt
+          path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/checksums-windows-x86_64.txt
           retention-days: 90
 
       - name: Attach checksums to release (Windows x86_64)
@@ -405,5 +405,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          files: src-tauri/target/release/bundle/checksums-windows-x86_64.txt
+          files: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/checksums-windows-x86_64.txt
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}

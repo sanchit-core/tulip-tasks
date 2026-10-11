@@ -61,6 +61,13 @@ if [ "$REMOVE" = true ]; then
         echo "Removed installation directory"
     fi
 
+    # Remove icon from icon theme
+    ICON_DIR="$HOME/.local/share/icons/hicolor/scalable/apps"
+    if [ -f "$ICON_DIR/tulip-tasks.svg" ]; then
+        rm "$ICON_DIR/tulip-tasks.svg"
+        echo "Removed icon from icon theme"
+    fi
+
     # Remove PATH entries from shell profiles
     for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
         if [ -f "$rc" ] && grep -q "HOME/.local/bin" "$rc"; then
@@ -68,6 +75,7 @@ if [ "$REMOVE" = true ]; then
         fi
     done
 
+    echo ""
     echo "=== Removal Complete ==="
     echo "Tulip Tasks has been uninstalled from ~/.local/"
     exit 0
@@ -78,10 +86,15 @@ echo "=== Tulip Tasks $APP_VER Installation ==="
 echo "Installation directory: $HOME/.local/tulip-tasks"
 echo ""
 
+# Determine script directory for locating static icon
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ICON_SRC="$SCRIPT_DIR/static/tulip-tasks-icon.svg"
+
 # Create directories
 mkdir -p "$HOME/.local/tulip-tasks"
 mkdir -p "$HOME/.local/bin"
 mkdir -p "$HOME/.local/share/applications"
+mkdir -p "$HOME/.local/share/icons/hicolor/scalable/apps"
 
 # Download the latest AppImage from GitHub releases
 LATEST_RELEASE_URL="https://api.github.com/repos/$REPO/releases/latest"
@@ -134,7 +147,15 @@ exec "$HOME/.local/tulip-tasks/tulip-tasks_${APP_VER}_linux_${APP_ARCH}.AppImage
 WRAPPER_EOF
 chmod +x "$BIN_PATH"
 
-# Create .desktop entry with icon
+# Install the icon
+if [ -f "$ICON_SRC" ]; then
+    cp "$ICON_SRC" "$HOME/.local/share/icons/hicolor/scalable/apps/tulip-tasks.svg"
+    echo "Installed icon to $HOME/.local/share/icons/hicolor/scalable/apps/tulip-tasks.svg"
+else
+    echo "Warning: Icon source not found at $ICON_SRC"
+fi
+
+# Create .desktop entry with absolute icon path
 DESKTOP_PATH="$HOME/.local/share/applications/tulip-tasks.desktop"
 cat > "$DESKTOP_PATH" << DESKTOP_EOF
 [Desktop Entry]
@@ -143,35 +164,10 @@ Comment=A neo-brutalist task board with calendar, backlog inbox and recurring ta
 Exec=tulip-tasks
 Terminal=false
 Type=Application
-Icon=tulip-tasks
+Icon=$HOME/.local/share/icons/hicolor/scalable/apps/tulip-tasks.svg
 Categories=Utility;Organization;
 X-Comment=Tulip Tasks $APP_VER
 DESKTOP_EOF
-
-# Try to set up a proper icon by extracting from AppImage or using default
-ICON_SOURCE="$APPIMAGE_PATH"
-if [ -f "$ICON_SOURCE" ]; then
-    # Attempt to extract the .desktop file from the AppImage to get the icon
-    ICON_EXTRACTED=$("$ICON_SOURCE" --appimage-extract 2>/dev/null || true)
-    if [ -f "$HOME/.local/tulip-tasks/tulip-tasks.desktop" ]; then
-        grep -oP '"Icon":? ?"\\K[^"]+' "$HOME/.local/tulip-tasks/tulip-tasks.desktop" 2>/dev/null | \
-            while read -r icon_path; do
-                if [ -n "$icon_path" ]; then
-                    # Copy or link the icon to hicolor theme
-                    ICON_DIR="$HOME/.local/share/icons/hicolor/256x256/apps"
-                    mkdir -p "$ICON_DIR"
-                    if echo "$icon_path" | grep -q "/"; then
-                        # Absolute or relative path
-                        cp "$icon_path" "$ICON_DIR/tulip-tasks.png" 2>/dev/null || true
-                    else
-                        # Just a name - try to find it
-                        find / -name "$icon_path" -type f 2>/dev/null | head -1 | \
-                            xargs -I{} cp {} "$ICON_DIR/tulip-tasks.png" 2>/dev/null || true
-                    fi
-                fi
-            done
-    fi
-fi
 
 # Update PATH in shell profile if needed
 SHELL_RC="$HOME/.bashrc"

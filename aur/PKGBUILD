@@ -19,7 +19,7 @@ package() {
   install -d "$pkgdir/opt/tulip-tasks"
   install -d "$pkgdir/usr/bin"
   install -d "$pkgdir/usr/share/applications"
-  install -d "$pkgdir/usr/share/icons/hicolor/256x256/apps"
+  install -d "$pkgdir/usr/share/icons/hicolor/scalable/apps"
 
   # Install AppImage
   install -m755 "$srcdir/tulip-tasks-0.1.5-x86_64.AppImage" "$pkgdir/opt/tulip-tasks/tulip-tasks.AppImage"
@@ -30,34 +30,26 @@ package() {
   # Install license
   install -Dm644 "$srcdir/$pkgname-$pkgver/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 
-  # Extract .desktop from AppImage to get icon information
-  extract_dir="$pkgdir/opt/tulip-tasks/extract"
-  install -d "$extract_dir"
-  if "$srcdir/tulip-tasks-0.1.5-x86_64.AppImage" --appimage-extract 2>/dev/null; then
-      # Copy the .desktop file
-      if [ -f "$extract_dir/tulip-tasks.desktop" ]; then
-          cp "$extract_dir/tulip-tasks.desktop" "$pkgdir/usr/share/applications/tulip-tasks.desktop"
-      fi
-      # Copy the icon if available
-      if [ -f "$extract_dir/tulip-tasks.svg" ] || [ -f "$extract_dir/tulip-tasks.png" ]; then
-          cp "$extract_dir/tulip-tasks.png" "$pkgdir/usr/share/icons/hicolor/256x256/apps/tulip-tasks.png" 2>/dev/null || true
-      fi
+  # Install icon from static directory
+  ICON_SRC="$startdir/../static/tulip-tasks-icon.svg"
+  if [ -f "$ICON_SRC" ]; then
+    install -Dm644 "$ICON_SRC" "$pkgdir/usr/share/icons/hicolor/scalable/apps/tulip-tasks.svg"
+  else
+    echo "Warning: Icon source not found at $ICON_SRC"
   fi
 
-  # Create .desktop entry as fallback
-  if [ ! -f "$pkgdir/usr/share/applications/tulip-tasks.desktop" ]; then
-      cat > "$pkgdir/usr/share/applications/tulip-tasks.desktop" << DESKTOP_EOF
+  # Create .desktop entry with absolute icon path
+  cat > "$pkgdir/usr/share/applications/tulip-tasks.desktop" << DESKTOP_EOF
 [Desktop Entry]
 Name=Tulip Tasks
 Comment=A neo-brutalist task board with calendar, backlog inbox and recurring tasks
 Exec=/usr/bin/tulip-tasks
 Terminal=false
 Type=Application
-Icon=/usr/bin/tulip-tasks
+Icon=/usr/share/icons/hicolor/scalable/apps/tulip-tasks.svg
 Categories=Utility;Organization;
 X-Comment=Tulip Tasks 0.1.5
 DESKTOP_EOF
-  fi
 
   # Try to update icon cache
   if [ -x /usr/bin/update-icon-caches ]; then

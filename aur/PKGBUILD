@@ -3,7 +3,6 @@ pkgname=tulip-tasks
 pkgver=1.0.2
 pkgrel=1
 pkgdesc="Neo-brutalist task board with calendar, backlog inbox and recurring tasks"
-arch=('x86_64')
 url="https://github.com/sanchit-core/tulip-tasks"
 license=('MIT')
 depends=()
@@ -11,7 +10,7 @@ makedepends=()
 options=(!strip !emptydirs)
 
 # Download AppImage from GitHub release
-source=("tulip-tasks-0.1.5-x86_64.AppImage::https://github.com/sanchit-core/tulip-tasks/releases/download/v0.1.5/tulip-tasks_0.1.5_linux_x86_64.AppImage")
+source=("tulip-tasks-1.0.2-x86_64.AppImage::https://github.com/sanchit-core/tulip-tasks/releases/download/v1.0.2/tulip-tasks_1.0.2_linux_x86_64.AppImage")
 sha256sums=('SKIP')
 
 package() {
@@ -21,25 +20,36 @@ package() {
   install -d "$pkgdir/usr/share/applications"
   install -d "$pkgdir/usr/share/icons/hicolor/scalable/apps"
 
-  # Install AppImage
-  install -m755 "$srcdir/tulip-tasks-0.1.5-x86_64.AppImage" "$pkgdir/opt/tulip-tasks/tulip-tasks.AppImage"
+  # Download and install AppImage
+  srcdir_app="$srcdir/tulip-tasks-1.0.2-x86_64.AppImage"
+  install -m755 "$srcdir_app" "$pkgdir/opt/tulip-tasks/tulip-tasks.AppImage"
 
   # Create symlink in /usr/bin
   ln -sf /opt/tulip-tasks/tulip-tasks.AppImage "$pkgdir/usr/bin/tulip-tasks"
 
   # Install license
-  install -Dm644 "$srcdir/$pkgname-$pkgver/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 "$srcdir/tulip-tasks-1.0.2/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 
-  # Install icon from static directory
-  ICON_SRC="$startdir/../static/tulip-tasks-icon.svg"
-  if [ -f "$ICON_SRC" ]; then
-    install -Dm644 "$ICON_SRC" "$pkgdir/usr/share/icons/hicolor/scalable/apps/tulip-tasks.svg"
-  else
-    echo "Warning: Icon source not found at $ICON_SRC"
+  # Extract .desktop and icon from AppImage
+  extract_dir="$pkgdir/opt/tulip-tasks/extract"
+  install -d "$extract_dir"
+  if "$srcdir_app" --appimage-extract 2>/dev/null; then
+    # Install the .desktop file
+    if [ -f "$extract_dir/tulip-tasks.desktop" ]; then
+      install -Dm644 "$extract_dir/tulip-tasks.desktop" "$pkgdir/usr/share/applications/tulip-tasks.desktop"
+    fi
+    # Install the icon if available
+    if [ -f "$extract_dir/tulip-tasks.svg" ]; then
+      install -Dm644 "$extract_dir/tulip-tasks.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/tulip-tasks.svg"
+    fi
+    if [ -f "$extract_dir/tulip-tasks.png" ]; then
+      install -Dm644 "$extract_dir/tulip-tasks.png" "$pkgdir/usr/share/icons/hicolor/scalable/apps/tulip-tasks.png"
+    fi
   fi
 
-  # Create .desktop entry with absolute icon path
-  cat > "$pkgdir/usr/share/applications/tulip-tasks.desktop" << DESKTOP_EOF
+  # Fallback .desktop entry if extraction failed
+  if [ ! -f "$pkgdir/usr/share/applications/tulip-tasks.desktop" ]; then
+    cat > "$pkgdir/usr/share/applications/tulip-tasks.desktop" << DESKTOP_EOF
 [Desktop Entry]
 Name=Tulip Tasks
 Comment=A neo-brutalist task board with calendar, backlog inbox and recurring tasks
@@ -48,8 +58,9 @@ Terminal=false
 Type=Application
 Icon=/usr/share/icons/hicolor/scalable/apps/tulip-tasks.svg
 Categories=Utility;Organization;
-X-Comment=Tulip Tasks 0.1.5
+X-Comment=Tulip Tasks 1.0.2
 DESKTOP_EOF
+  fi
 
   # Try to update icon cache
   if [ -x /usr/bin/update-icon-caches ]; then

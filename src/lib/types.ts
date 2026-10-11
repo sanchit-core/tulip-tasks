@@ -78,8 +78,8 @@ export interface Settings {
   wipWarnings: boolean;
   /** Hide the window titlebar/decorations entirely. */
   hideTitlebar: boolean;
-  /** Visual design theme. */
-  theme: Theme;
+  /** Light / dark / system auto mode. */
+  appearance: "system" | "light" | "dark";
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -87,7 +87,7 @@ export const DEFAULT_SETTINGS: Settings = {
   notifyHour: 9,
   wipWarnings: true,
   hideTitlebar: false,
-  theme: "minimal",
+  appearance: "system",
 };
 
 export interface Workspace {

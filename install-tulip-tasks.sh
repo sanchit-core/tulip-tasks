@@ -9,7 +9,7 @@
 set -euo pipefail
 
 APP_NAME="tulip-tasks"
-APP_VER="0.1.5"
+APP_VER="1.0.2"
 APP_ARCH="x86_64"
 REPO="sanchit-core/tulip-tasks"
 
@@ -148,11 +148,28 @@ WRAPPER_EOF
 chmod +x "$BIN_PATH"
 
 # Install the icon
+ICON_SRC="$SCRIPT_DIR/static/tulip-tasks-icon.svg"
 if [ -f "$ICON_SRC" ]; then
     cp "$ICON_SRC" "$HOME/.local/share/icons/hicolor/scalable/apps/tulip-tasks.svg"
-    echo "Installed icon to $HOME/.local/share/icons/hicolor/scalable/apps/tulip-tasks.svg"
+    echo "Installed icon from local source"
 else
-    echo "Warning: Icon source not found at $ICON_SRC"
+    # Fallback: try to download from the GitHub repository
+    ICON_URL="https://raw.githubusercontent.com/sanchit-core/tulip-tasks/main/static/tulip-tasks-icon.svg"
+    if command -v curl &>/dev/null; then
+        if curl -fL "$ICON_URL" -o "$HOME/.local/share/icons/hicolor/scalable/apps/tulip-tasks.svg" 2>/dev/null; then
+            echo "Installed icon from remote source"
+        else
+            echo "Warning: Icon source not found at $ICON_SRC or $ICON_URL"
+        fi
+    elif command -v wget &>/dev/null; then
+        if wget -q "$ICON_URL" -O "$HOME/.local/share/icons/hicolor/scalable/apps/tulip-tasks.svg" 2>/dev/null; then
+            echo "Installed icon from remote source"
+        else
+            echo "Warning: Icon source not found at $ICON_SRC or $ICON_URL"
+        fi
+    else
+        echo "Warning: Icon source not found at $ICON_SRC"
+    fi
 fi
 
 # Create .desktop entry with absolute icon path

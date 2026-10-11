@@ -12,12 +12,15 @@
   $effect(() => {
     if (!ready || typeof document === "undefined") return;
     // Apply the theme from store settings
-    const storedTheme = store.workspace.settings.theme;
-    if (storedTheme === "dark") {
+    const appearance = store.workspace.settings.appearance;
+    if (appearance === "dark") {
       document.documentElement.dataset.theme = "dark";
-    } else {
-      // Default to minimal
+    } else if (appearance === "light") {
       document.documentElement.dataset.theme = "minimal";
+    } else {
+      // appearance === "system": follow OS preference
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme = prefersDark ? "dark" : "minimal";
     }
   });
 
@@ -26,11 +29,15 @@
       ready = true;
       if (typeof document !== "undefined") {
         // Re-apply after store is ready
-        const storedTheme = store.workspace.settings.theme;
-        if (storedTheme === "dark") {
+        const appearance = store.workspace.settings.appearance;
+        if (appearance === "dark") {
           document.documentElement.dataset.theme = "dark";
-        } else {
+        } else if (appearance === "light") {
           document.documentElement.dataset.theme = "minimal";
+        } else {
+          // appearance === "system": follow OS preference
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.dataset.theme = prefersDark ? "dark" : "minimal";
         }
       }
       if (store.workspace.settings.notificationsEnabled && isDesktop()) {
@@ -44,11 +51,15 @@
       ready = true;
       if (typeof document !== "undefined") {
         // Fallback to current workspace settings
-        const storedTheme = store.workspace.settings.theme;
-        if (storedTheme === "dark") {
+        const appearance = store.workspace.settings.appearance;
+        if (appearance === "dark") {
           document.documentElement.dataset.theme = "dark";
-        } else {
+        } else if (appearance === "light") {
           document.documentElement.dataset.theme = "minimal";
+        } else {
+          // appearance === "system": follow OS preference
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.dataset.theme = prefersDark ? "dark" : "minimal";
         }
       }
     });

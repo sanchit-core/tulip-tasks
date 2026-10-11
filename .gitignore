@@ -24,3 +24,5 @@ session-ses_*.md
 
 # local release docs
 RELEASE.md
+aur/
+squashfs-root/

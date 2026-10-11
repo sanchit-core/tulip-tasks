@@ -119,9 +119,11 @@ export function coerceWorkspace(data: unknown): Workspace | null {
     settings: {
       ...DEFAULT_SETTINGS,
       ...(body.settings ?? {}),
-      theme: THEMES.includes((body.settings as any)?.theme as Theme)
-        ? ((body.settings as Settings).theme as Theme)
-        : DEFAULT_SETTINGS.theme,
+      appearance: (body.settings as any)?.appearance === "dark"
+        ? "dark"
+        : (body.settings as any)?.appearance === "light"
+          ? "light"
+          : DEFAULT_SETTINGS.appearance,
     },
   };
 }

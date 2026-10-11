@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import Icon from "./Icon.svelte";
+import Logo from "./Logo.svelte";
   import { closeWindow, inDesktop, minimizeWindow, toggleMaximize } from "$lib/window";
 
   let { saveState = "idle" }: { saveState?: "idle" | "saving" | "error" } = $props();
@@ -21,7 +22,7 @@
 
 <div class="bar" data-tauri-drag-region>
   <span class="logo" data-tauri-drag-region>
-    <Icon name="tulip" size={17} fill />
+    <Logo size={17} />
   </span>
   <span class="title truncate" data-tauri-drag-region>{title}</span>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { store, type View } from "$lib/store.svelte";
   import Icon from "./Icon.svelte";
+import Logo from "./Logo.svelte";
   import NeuBadge from "./NeuBadge.svelte";
   import NeuButton from "./NeuButton.svelte";
   import { toast } from "$lib/toasts";
@@ -104,7 +105,7 @@
 
 <aside class="side">
   <div class="brand">
-    <span class="logo"><Icon name="tulip" size={18} fill /></span>
+    <span class="logo"><Logo size={18} /></span>
     <span class="truncate">Tulip Tasks</span>
   </div>
 

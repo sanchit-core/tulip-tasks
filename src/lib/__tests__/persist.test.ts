@@ -18,7 +18,7 @@ describe("persist", () => {
     expect(ws!.tasks[0].tags).toEqual([]);
     expect(ws!.tasks[0].subtasks).toEqual([]);
     expect(ws!.tasks[0].title).toBe("Untitled task");
-    expect(ws!.settings.theme).toBe("minimal");
+    expect(ws!.settings.appearance).toBe("system");
   });
 
   it("parseWorkspace rejects invalid JSON", () => {

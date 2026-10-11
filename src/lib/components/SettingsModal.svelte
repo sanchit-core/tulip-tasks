@@ -98,25 +98,16 @@
       onchange={(v) => store.updateSettings({ hideTitlebar: v })}
     />
     <div class="field">
-      <span class="lbl">Theme & design</span>
+      <span class="lbl">Appearance</span>
       <select
-        value={s.theme}
-        onchange={(e) => store.updateSettings({ theme: e.currentTarget.value as Theme })}
+        value={s.appearance}
+        onchange={(e) => store.updateSettings({ appearance: e.currentTarget.value as "system" | "light" | "dark" })}
       >
-        {#each THEMES as t (t)}
-          <option value={t}>{THEME_LABELS[t]}</option>
-        {/each}
+        <option value="system">Follow system theme</option>
+        <option value="light">Light mode</option>
+        <option value="dark">Dark mode</option>
       </select>
     </div>
-  </div>
-
-  <div class="sec">
-    <h4>Appearance</h4>
-    <NeuToggle
-      checked={s.theme === "dark"}
-      label="Dark mode"
-      onchange={(v) => store.updateSettings({ theme: v ? "dark" : "minimal" })}>
-    </NeuToggle>
   </div>
 
   <div class="sec">

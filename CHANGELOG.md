@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fixed dark mode not applying when store boot fails by adding a fallback in the layout's onMount.
+
 ### Added
 - Modular store architecture (pure functions in `ids.ts`, `workspace.ts`, `sorting.ts`, `filters.ts`, `selectors.ts`, `mutations.ts`, `seed.ts`)
 - Comprehensive test suite (74 tests covering all pure modules + store integration)

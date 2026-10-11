@@ -1,6 +1,6 @@
 # Maintainer: Sanchit Core <me@sanchit-core.com>
 pkgname=tulip-tasks
-pkgver=0.1.5
+pkgver=1.0.2
 pkgrel=1
 pkgdesc="Neo-brutalist task board with calendar, backlog inbox and recurring tasks"
 arch=('x86_64')

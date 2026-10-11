@@ -39,6 +39,18 @@
           () => store.workspace.settings.notifyHour,
         );
       }
+    }).catch((err) => {
+      console.error("Failed to boot store", err);
+      ready = true;
+      if (typeof document !== "undefined") {
+        // Fallback to current workspace settings
+        const storedTheme = store.workspace.settings.theme;
+        if (storedTheme === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        } else {
+          document.documentElement.dataset.theme = "minimal";
+        }
+      }
     });
     window.addEventListener("beforeunload", () => void store.flush());
   });

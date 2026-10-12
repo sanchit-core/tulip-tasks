@@ -105,7 +105,7 @@ import Logo from "./Logo.svelte";
 
 <aside class="side">
   <div class="brand">
-    <span class="logo"><Logo size={18} /></span>
+    <span class="logo"><Logo size={28} /></span>
     <span class="truncate">Tulip Tasks</span>
   </div>
 

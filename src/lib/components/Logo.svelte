@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  let { size = 20 } = $props();
+  let { size = 28 } = $props();
 </script>
 
 <img

@@ -22,7 +22,7 @@ import Logo from "./Logo.svelte";
 
 <div class="bar" data-tauri-drag-region>
   <span class="logo" data-tauri-drag-region>
-    <Logo size={17} />
+    <Logo size={28} />
   </span>
   <span class="title truncate" data-tauri-drag-region>{title}</span>
 
